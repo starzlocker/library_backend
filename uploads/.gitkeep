@@ -1,0 +1,8 @@
+# Esta pasta armazena arquivos enviados pelos usuários
+# Inclui:
+# - Capas de livros
+# - Documentos de usuários
+# - Arquivos temporários
+
+# NOTA: Esta pasta deve ter permissões de escrita
+# e os arquivos não devem ser commitados no Git

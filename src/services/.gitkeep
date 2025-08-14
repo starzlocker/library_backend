@@ -1,0 +1,5 @@
+# Esta pasta contém os serviços da aplicação
+# Os serviços implementam:
+# - Lógica de negócio
+# - Operações complexas
+# - Integrações com APIs externas

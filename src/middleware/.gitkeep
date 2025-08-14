@@ -1,0 +1,6 @@
+# Esta pasta contém middlewares customizados
+# Os middlewares são responsáveis por:
+# - Autenticação e autorização
+# - Validação de dados
+# - Tratamento de erros
+# - Logging

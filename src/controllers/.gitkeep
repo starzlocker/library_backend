@@ -1,0 +1,6 @@
+# Esta pasta contém os controladores da aplicação
+# Os controladores são responsáveis por:
+# - Receber requisições HTTP
+# - Validar dados de entrada
+# - Chamar os serviços apropriados
+# - Retornar respostas HTTP

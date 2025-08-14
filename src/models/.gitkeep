@@ -1,0 +1,5 @@
+# Esta pasta contém os modelos de dados da aplicação
+# Os modelos definem:
+# - Estrutura dos dados
+# - Validações
+# - Relacionamentos entre entidades

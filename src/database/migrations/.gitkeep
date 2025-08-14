@@ -1,0 +1,5 @@
+# Esta pasta contém scripts de migração do banco de dados
+# As migrações são responsáveis por:
+# - Criar tabelas
+# - Alterar estruturas existentes
+# - Versionar mudanças no banco

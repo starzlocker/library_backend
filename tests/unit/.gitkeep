@@ -1,0 +1,5 @@
+# Esta pasta contém testes unitários
+# Os testes unitários validam:
+# - Funções isoladas
+# - Comportamento de componentes específicos
+# - Casos de borda

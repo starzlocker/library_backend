@@ -1,0 +1,5 @@
+# Esta pasta contém as definições de rotas da API
+# As rotas definem:
+# - Endpoints da aplicação
+# - Mapeamento para controladores
+# - Middlewares específicos
