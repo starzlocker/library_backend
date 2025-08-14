@@ -5,7 +5,7 @@
 exports.up = function(knex) {
     return knex.schema.createTable('books', table => {
         table.increments('id').primary();
-        table.string('title', 255).notNullable();
+        table.string('title', 255).notNullable().unique();
         table.integer('author_id').unsigned(); // sem foreign key por enquanto
         table.integer('genre_id').unsigned();  // sem foreign key por enquanto
         table.integer('year');

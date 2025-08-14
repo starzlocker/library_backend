@@ -1,6 +1,6 @@
-require('dotenv').config()
+require('dotenv').config({ path: path.resolve('../../.env') })
 
-const connect = async () => {
+export default dbConnect = async () => {
     if (global.connection) {
         return global.connection.connect()
     }
@@ -24,17 +24,4 @@ const connect = async () => {
     global.connection = pool;
     return pool.connect()
 }
-
-
-const getBooks = async () => {
-    const client = await connect();
-    const res = client.query(`
-            SELECT
-            *
-            FROM Books;
-        `)
-    return res.rows;
-}
-
-module.exports = { getBooks }
 
