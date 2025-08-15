@@ -1,6 +1,7 @@
-require('dotenv').config({ path: path.resolve('../../.env') })
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
-export default dbConnect = async () => {
+const dbConnect = async () => {
     if (global.connection) {
         return global.connection.connect()
     }

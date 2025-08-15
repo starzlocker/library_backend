@@ -1,11 +1,12 @@
 // Update with your config settings.
-require('dotenv').config({ path: '../.env' })
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 // Debug - vamos ver se as variáveis estão carregando
 console.log('🔍 Debug das variáveis:');
 console.log('DB_HOST:', process.env.DB_HOST);
 console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? '***' : 'undefined');
+console.log('DB_PWD:', process.env.DB_PWD ? '***' : 'undefined');
 
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
