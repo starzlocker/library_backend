@@ -11,8 +11,8 @@ class Book{
 		client.release()
 		return res.rows;
 	}
-	 POKUFIDIDU 
-	 
+	  
+
 	static async getBookByTitle (title)  {
 		const client = await dbConnect();
 		const res = await client.query("SELECT * FROM books WHERE title ILIKE $1", [`%${title}%`]);
