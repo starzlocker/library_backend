@@ -1,4 +1,4 @@
-const {Book} = require('../models/Book')
+const {Book} = require('../repositories/Book')
 
 const getBooks = async (req, res) => {
     try {
@@ -107,6 +107,28 @@ const deleteBook = async (req, res) => {
             success: false,
             error: e.message
         })
+    }
+}
+
+const createBook = async () => {
+    if (!(book && typeof(book) == 'object') && book?.title) {
+
+    }
+
+    const google = new GoogleBooks();
+
+    const bookInfo = await google.searchBookByTitle(book.title);
+
+    if (bookInfo?.volumeInfo) {
+        const volumeInfo = bookInfo.volumeInfo;
+        book.descricao = volumeInfo.description;
+        if (volumeInfo?.imageLinks) {
+            book.cover_url = volumeInfo.imageLinks?.thumbnail;
+        }
+    }
+
+    if (bookInfo?.saleInfo) {
+        book.price = bookInfo?.listPrice?.amount || 0.0;
     }
 }
 

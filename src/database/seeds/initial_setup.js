@@ -20,7 +20,7 @@ const insertDefaultBooks = async (client, data) => {
 			
 			await client.query(`
 				INSERT INTO books(title, year, author_id, genre_id) values($1,$2,$3,$4) ON CONFLICT (title) DO NOTHING
-			`, [book.title, book.year, author_id, genre_id])
+			`, [book.title, book.year, author_id, genre_id]);
 		}
 	} catch (e) {
 		console.error(e);
@@ -29,14 +29,14 @@ const insertDefaultBooks = async (client, data) => {
 
 const insertDefaultAuthors = async (client, data) => {
 	try {
-		console.log(data)
+		console.log(data);
 		for (let book of data) {
 			await client.query(`
 				INSERT INTO authors(name) values($1) ON CONFLICT (name) DO NOTHING
-			`, [book.author])
+			`, [book.author]);
 		}
 	} catch (e) {
-		console.error(e)
+		console.error(e);
 	}
 }
 
@@ -46,10 +46,10 @@ const insertDefaultGenres = async (client, data) => {
 		for (let book of data) {
 			await client.query(`
 				INSERT INTO genres(name) values($1) ON CONFLICT (name) DO NOTHING
-			`, [book.genre])
+			`, [book.genre]);
 		}
 	} catch (e) {
-		console.error(e)
+		console.error(e);
 	}
 }
 
@@ -65,7 +65,7 @@ const seedDatabase = async (data) => {
 		await client.query('ROLLBACK');
 		console.error(e);
 	} finally {
-		client.release()
+		client.release();
 	}
 }
 
