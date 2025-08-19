@@ -14,7 +14,7 @@ class GoogleBooks {
 
 		const data = await res.json();
 
-		return data?.items;
+		return data?.items[0];
 	}
 }
 
