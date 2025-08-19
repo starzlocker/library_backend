@@ -1,5 +1,6 @@
 const {dbConnect} = require('../database/setup.js')
 const {GoogleBooks} = require('../services/googleBookService.js')
+const {BookModel} = require('../models/Book.js')
 /**
  * @typedef {Object} Book
  * @property {number} [id]
@@ -20,18 +21,32 @@ class Book{
 				FROM books;
 			`)
 		client.release();
-		return res.rows;
+		const books = res.rows.map(book => new BookModel(book));
+		return books;
 	}
 
-	static async createBook(book) {
+	static async createBook(data) {
+		const book = new BookModel(data);
 		const client = await dbConnect();
 		const res = await client.query(`
 			INSERT INTO books (
 				title, author_id, genre_id, year, 
 				cover_url, description, price
-			)
-		`);
+			) VALUES ($1, $2, $3, $4, $5, $6, $7)
+			RETURNING *
+		`, [
+			book.title,
+			book.author_id,
+			book.genre_id,
+			book.year,
+			book.cover_url,
+			book.description,
+			book.price
+		]);
+
+		return new BookModel(res.rows[0]);
 	}
+
 	
 	static async getBookByTitle (title)  {
 		const client = await dbConnect();
