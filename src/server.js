@@ -3,6 +3,9 @@ const express = require('express')
 const router = express.Router();
 
 const bookRoutes = require('./routes/bookRoutes');
+const authRoutes = require('./routes/authRoutes');
+
+router.use('/auth', authRoutes)
 
 router.use('/books', bookRoutes);
 
