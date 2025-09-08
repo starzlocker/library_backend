@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 let senha;
 
-router.post('/signup', [
+router.post('/login', [
 	check("password", "A senha deve ter 6 ou mais dígitos.")
 		.isLength(6)
 ], async (req, res) => {
@@ -16,7 +16,7 @@ router.post('/signup', [
 		res.status(404).json({
 			errors
 		})
-	}
+	} // teste
 
 	senha = await bcrypt.hash(password, 10);
 

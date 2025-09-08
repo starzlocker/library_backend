@@ -6,7 +6,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 console.log('🔍 Debug das variáveis:');
 console.log('DB_HOST:', process.env.DB_HOST);
 console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_PWD:', process.env.DB_PWD ? '***' : 'undefined');
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? '***' : 'undefined');
 
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
@@ -32,10 +32,10 @@ module.exports = {
   production: {
     client: 'postgresql',
     connection: {
-      database: process.env.DB_NAME,
+      database: process.env.DB_NAME || 'postgres',
       user:     process.env.DB_USER,
-      password: process.env.DB_PWD,
-      host: process.env.DB_HOST || 'localhost',
+      password: process.env.DB_PASSWORD,
+      host: process.env.DB_HOST,
       port: process.env.DB_PORT || 5432
     },
     pool: {
