@@ -10,5 +10,12 @@ router.post('/login', [
 		.isLength(6)
 ], AuthController.login)
 
+router.post('/signup', [
+	check("password", "A senha deve ter 6 ou mais dígitos.")
+		.isLength(6),
+	check("email", "Digite um e-mail válido!")
+		.isEmail()
+], AuthController.signup)
+
 module.exports = router
 

@@ -1,23 +1,29 @@
-const {dbConnect} = require('../config/database');
+const {dbConnect} = require('../database/setup.js')
 const {UserModel} = require('../models/User.js')
 
 class User {
-	static async createUser(data) {
-		const user = new UserModel(data);
+	static async createUser(
+		email,
+		password,
+		name
+	) {
+
+		const userInput = new UserModel(
+			name,
+			email
+		);
+
 		try {
-			user.validate();
+			userInput.validate();
 		} catch (error) {
 			throw Error(` Erro ao validar novo usuário: ${error}`);
 		}
-
 		try {
 			const client = await dbConnect();
-	
 			const res = await client.query(
-				"insert into users (name, email, password)values ($1 $2 $3) returning (id, name, email)", [
-					user.name,
-					user.email,
-					user.password
+				"insert into users (email, password)values ($1, $2) returning (id, email)", [
+					userInput.email,
+					userInput.password
 				]
 			);
 
@@ -87,3 +93,6 @@ class User {
 
 	
 }
+
+
+module.exports = {User};
