@@ -28,7 +28,7 @@ class Genre {
 		} catch (error) {
 			console.error(`Erro ao inserir autor: ${error}`)
 		} finally {
-			client.release()
+			client.release();
 		}
 	}
 }
