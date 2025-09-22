@@ -2,8 +2,10 @@ class BookModel {
     constructor(data) {
         this.id = data.id;
         this.title = data.title;
+        this.author = data.author;
         this.author_id = data.author_id;
         this.genre_id = data.genre_id;
+        this.genre = data.genre;
         this.year = data.year;
         this.cover_url = data.cover_url;
         this.description = data.description;

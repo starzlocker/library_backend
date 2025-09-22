@@ -17,12 +17,33 @@ class Book{
 		const client = await dbConnect();
 		const res = await client.query(`
 				SELECT
-				*
-				FROM books;
+				*,
+				authors.name as author,
+				genres.name as genre
+				FROM books
+				LEFT JOIN authors ON authors.id = books.author_id
+				LEFT JOIN genres ON genres.id = books.genre_id;
 			`)
 		client.release();
 		const books = res.rows.map(book => new BookModel(book));
 		return books;
+	}
+
+	static async getBookInfoFromApi(title) {
+		const google = new GoogleBooks();
+
+		const bookInfo = await google.searchBookByTitle(title);
+		const info = bookInfo?.volumeInfo
+		if (info) {
+			return {
+				cover_url: info?.imageLinks?.thumbnail || info?.imageLinks?.smallThumbnail || "",
+				description: info?.description ? info.description : "",
+				gender: info?.categories.length ? info.categories[0] : "",
+				author: info?.authors.length ? info.authors[0] : ""
+			}
+		}
+		return null;
+
 	}
 
 	static async createBook(data) {
