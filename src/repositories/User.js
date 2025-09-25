@@ -3,14 +3,18 @@ const {UserModel} = require('../models/User.js')
 
 class User {
 	static async createUser(
+		name,
+		last_name,
 		email,
 		password,
-		name
 	) {
 
 		const userInput = new UserModel(
 			name,
-			email
+			last_name,
+			email,
+			password,
+			"user"
 		);
 
 		try {
@@ -21,38 +25,36 @@ class User {
 		try {
 			const client = await dbConnect();
 			const res = await client.query(
-				"insert into users (email, password)values ($1, $2) returning (id, email)", [
+				"insert into users (name, last_name, email, password, role) values ($1, $2, $3, $4, $5) returning (id, name, last_name, email, password, role)", [
+					userInput.name,
+					userInput.last_name,
 					userInput.email,
-					userInput.password
+					userInput.password,
+					userInput.role
 				]
 			);
-
+			if (res.rows.length === 0) {
+				throw new Error("Não cadastrou o usuário");
+			}
 			const user = new UserModel(res.rows[0])
 
-			return user;
+			return user.id;
 		} catch (error) {
 			console.error(`Erro ao criar novo usuário: ${error}`);
+			return null;
 		}
 	}
 
-	static async getUserByEmailAndPassword(data) {
-		const {email, password} = data;
-
+	static async getUserByEmail(email) {
 		const client = await dbConnect();
 
-		const res = await client.query("select * from users where email = $1", email);
+		const res = await client.query("select * from users where email = $1", [email]);
 
 		if (res.rows.length === 0) {
 			throw new Error("Não existe nenhum usuário com esse email");
 		}
-		const user = new UserModel(res.rows[0])
-		const validPassword = validatePassword(password, user.password);
 
-		if (validPassword) {
-			return user;
-		}
-
-		throw new Error("A senha não corresponde à esse usuário.")
+		return res.rows[0];
 	}
 
 	static async deleteUser(data) {

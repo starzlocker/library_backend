@@ -6,16 +6,28 @@ const {check}= require('express-validator');
 const bcrypt = require('bcrypt');
 
 router.post('/login', [
-	check("password", "A senha deve ter 6 ou mais dígitos.")
-		.isLength(6)
-], AuthController.login)
+	check("password", "A senha deve ter 6 ou mais dígitos."),
+	check("email", "Digite um e-mail válido")
+		.isEmail(),
+], AuthController.login);
 
 router.post('/signup', [
 	check("password", "A senha deve ter 6 ou mais dígitos.")
-		.isLength(6),
+		.isLength({min: 6}),
 	check("email", "Digite um e-mail válido!")
-		.isEmail()
-], AuthController.signup)
+		.isEmail(),
+	check("name", "Nome é obrigatório"),
+	check("last_name", "Sobrenome é obrigatório")
+], AuthController.signup);
+
+router.post('/logout', AuthController.logout);
+
+router.post('/test_auth', AuthController.verifyJWT, 	(req, res) => {
+	res.json({
+		success: true,
+		message: "Usuário autorizado! Token OK"
+	})
+})
 
 module.exports = router
 
