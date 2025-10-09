@@ -70,6 +70,23 @@ class Book{
 		return books;
 	}
 
+	static async getBookInfoFromApi(title) {
+		const google = new GoogleBooks();
+
+		const bookInfo = await google.searchBookByTitle(title);
+		const info = bookInfo?.volumeInfo
+		if (info) {
+			return {
+				cover_url: info?.imageLinks?.thumbnail || info?.imageLinks?.smallThumbnail || "",
+				description: info?.description ? info.description : "",
+				gender: info?.categories.length ? info.categories[0] : "",
+				author: info?.authors.length ? info.authors[0] : ""
+			}
+		}
+		return null;
+
+	}
+
 	static async createBook(data) {
 		const book = new BookModel(data);
 		const client = await dbConnect();
