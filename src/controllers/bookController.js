@@ -6,7 +6,18 @@ const {GoogleBooks} = require('../services/googleBookService')
 
 const getBooks = async (req, res) => {
     try {
-        const books = await Book.getBooks()
+        const {
+            title,
+            author,
+            year
+        } = req.query;
+
+        const queryParams = {}
+        if (title) queryParams["title"] = title;
+        if (author) queryParams["author"] = author;
+        if (year) queryParams["year"] = year;
+        
+        const books = await Book.getBooks(queryParams)
 
         if (!books.length) {
             return res.status(404).json( {
@@ -29,7 +40,7 @@ const getBooks = async (req, res) => {
 
 const getBookByTitle = async (req, res) => {
     try {
-        const data = req.body;
+        const data = req.query.id;
         if (!data?.book_title || typeof(data.book_title) != 'string') {
             res.status(400).json({
                 message: 'Requisição inválida, o título do livro não foi fornecido.'

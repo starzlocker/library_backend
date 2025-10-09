@@ -1,6 +1,9 @@
-const {dbConnect} = require('../database/setup.js')
-const {GoogleBooks} = require('../services/googleBookService.js')
-const {BookModel} = require('../models/Book.js')
+const {dbConnect} = require('../database/setup.js');
+const {GoogleBooks} = require('../services/googleBookService.js');
+const {BookModel} = require('../models/Book.js');
+const {AuthorRepo} = require('../repositories/Author.js');
+const {GenreRepo} = require('../repositories/Genre.js');
+const { join } = require('path');
 /**
  * @typedef {Object} Book
  * @property {number} [id]
@@ -12,14 +15,56 @@ const {BookModel} = require('../models/Book.js')
  * @property {string} [description]
  */
 
+/*
+[] join genre table if genre key has value
+[] join author table if author key has value
+
+olho os meus parametros
+se eu tiver o nome do autor
+preciso encontrar o id dele
+
+para cada parametro
+	é autor?
+		ajusto o where para autor_id = (select id from authors where name == ${1})
+*/
+
 class Book{
-	static async getBooks()  {
+	static async getBooks(queryParams)  {
 		const client = await dbConnect();
-		const res = await client.query(`
-				SELECT
-				*
-				FROM books;
-			`)
+
+		let query = [
+			"SELECT * FROM books b"
+		] 
+		const whereValues = []
+		const whereQuery = []
+		const joinQuery = []
+		if (Object.keys(queryParams).length) {
+			whereQuery.push("WHERE")
+
+			for (let [k, v] of Object.entries(queryParams)) {
+				if (v) {
+					if (whereValues.length > 0) whereQuery.push("and")
+					if (k == "year") {
+						whereQuery.push(`${k} = $${whereValues.length+1}`);
+						
+					} else if (k == "author") {
+						joinQuery.push("INNER JOIN authors a on b.author_id = a.id ")
+						whereQuery.push(`a.name ilike '%' || $${whereValues.length+1} || '%'`);
+					} else if (k == "genre") {
+						joinQuery.push("INNER JOIN genres g on b.genre_id = g.id ")
+						whereQuery.push(`g.name ilike '%' || $${whereValues.length+1} || '%'`);				
+					} else {
+						whereQuery.push(`title ilike '%' || $${whereValues.length+1} || '%'`);		
+					}
+					whereValues.push(v)
+				}
+			}
+
+			if (joinQuery.length) query.push(...joinQuery);
+			if (whereQuery.length) query.push(...whereQuery);
+		}
+
+		const res = await client.query(query.join(" "), whereValues)
 		client.release();
 		const books = res.rows.map(book => new BookModel(book));
 		return books;
