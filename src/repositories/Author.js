@@ -1,6 +1,6 @@
 const {dbConnect} = require('../database/setup.js')
 const {AuthorModel} = require('../models/Author.js')
-
+const {logger}  = require("../config/logger")
 class Author {	
 	static async getAuthorByName(authorName) {
 		const client = await dbConnect();
@@ -13,7 +13,7 @@ class Author {
 
 			return new AuthorModel(res.rows[0]);
 		} catch (error) {
-			console.error(`Erro ao buscar autor por nome: ${error}`);
+			logger.error(`Erro ao buscar autor por nome: ${error}`);
 		} finally {
 			client.release();
 		}
@@ -26,7 +26,7 @@ class Author {
 			const res = await client.query("insert into authors (name) VALUES ($1) RETURNING *", [author.name]);
 			return new AuthorModel(res.rows[0]);
 		} catch (error) {
-			console.error(`Erro ao inserir autor: ${error}`)
+			logger.error(`Erro ao inserir autor: ${error}`)
 		} finally {
 			client.release()
 		}

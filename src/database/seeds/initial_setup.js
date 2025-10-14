@@ -1,5 +1,5 @@
 const {dbConnect} = require('../setup')
-
+const {logger}  = require('../../config/logger')
 const insertDefaultBooks = async (client, data) => {
 	try {
 		for (let book of data) {
@@ -7,11 +7,11 @@ const insertDefaultBooks = async (client, data) => {
 			const genreResult = await client.query("SELECT id FROM genres WHERE name = $1", [book.genre]);
 			
 			if (authorResult.rows.length === 0) {
-				console.error(`Author not found: ${book.author}`);
+				logger.error(`Author not found: ${book.author}`);
 				continue;
 			}
 			if (genreResult.rows.length === 0) {
-				console.error(`Genre not found: ${book.genre}`);
+				logger.error(`Genre not found: ${book.genre}`);
 				continue;
 			}
 			
@@ -23,20 +23,20 @@ const insertDefaultBooks = async (client, data) => {
 			`, [book.title, book.year, author_id, genre_id]);
 		}
 	} catch (e) {
-		console.error(e);
+		logger.error(e);
 	}
 }
 
 const insertDefaultAuthors = async (client, data) => {
 	try {
-		console.log(data);
+		logger.log(data);
 		for (let book of data) {
 			await client.query(`
 				INSERT INTO authors(name) values($1) ON CONFLICT (name) DO NOTHING
 			`, [book.author]);
 		}
 	} catch (e) {
-		console.error(e);
+		logger.error(e);
 	}
 }
 
@@ -49,7 +49,7 @@ const insertDefaultGenres = async (client, data) => {
 			`, [book.genre]);
 		}
 	} catch (e) {
-		console.error(e);
+		logger.error(e);
 	}
 }
 
@@ -63,7 +63,7 @@ const seedDatabase = async (data) => {
 		await client.query("COMMIT");
 	} catch (e) {
 		await client.query('ROLLBACK');
-		console.error(e);
+		logger.error(e);
 	} finally {
 		client.release();
 	}

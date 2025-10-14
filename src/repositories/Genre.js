@@ -1,6 +1,6 @@
 const {dbConnect} = require('../database/setup.js')
 const {GenreModel} = require('../models/Genre.js')
-
+const {logger}  = require("../config/logger")
 class Genre {	
 	static async getGenreByName(genreName) {
 		const client = await dbConnect();
@@ -13,7 +13,7 @@ class Genre {
 
 			return new GenreModel(res.rows[0]);
 		} catch (error) {
-			console.error(`Erro ao buscar autor por nome: ${error}`);
+			logger.error(`Erro ao buscar autor por nome: ${error}`);
 		} finally {
 			client.release();
 		}
@@ -26,7 +26,7 @@ class Genre {
 			const res = await client.query("insert into genres (name) VALUES ($1) RETURNING *", [genre.name]);
 			return new GenreModel(res.rows[0]);
 		} catch (error) {
-			console.error(`Erro ao inserir autor: ${error}`)
+			logger.error(`Erro ao inserir autor: ${error}`)
 		} finally {
 			client.release();
 		}

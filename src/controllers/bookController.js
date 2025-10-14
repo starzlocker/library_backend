@@ -3,9 +3,11 @@ const {Author} = require('../repositories/Author')
 const {BookModel} = require('../models/Book')
 const {Genre} = require('../repositories/Genre')
 const {GoogleBooks} = require('../services/googleBookService')
+const {logger} = require("../config/logger");
 
 const getBooks = async (req, res) => {
     try {
+        logger.info("Testando")
         const {
             title,
             author,
@@ -30,7 +32,7 @@ const getBooks = async (req, res) => {
             data: books
         })
     } catch (e) {
-        console.error(`Erro ao buscar livros: ${e}`)
+        logger.error(`Erro ao buscar livros: ${e}`)
         res.status(500).json({
             success: false,
             error: e.message
@@ -118,7 +120,7 @@ const deleteBook = async (req, res) => {
         })
 
     } catch (e) {
-        console.error(`Erro ao deletar livro: ${e}`);
+        logger.error(`Erro ao deletar livro: ${e}`);
         res.status(500).json({
             success: false,
             error: e.message
@@ -176,7 +178,7 @@ const createBook = async (req, res) => {
             data: createdBook
         })
     } catch (error) {
-        console.error(`Erro ao criar livro: ${error}`);
+        logger.error(`Erro ao criar livro: ${error}`);
         return res.status(500).json({
             success: false,
             error: error.message

@@ -1,6 +1,6 @@
 const {dbConnect} = require('../database/setup.js')
 const {UserModel} = require('../models/User.js')
-
+const {logger}  = require("../config/logger")
 class User {
 	static async createUser(
 		name,
@@ -40,7 +40,7 @@ class User {
 
 			return user.id;
 		} catch (error) {
-			console.error(`Erro ao criar novo usuário: ${error}`);
+			logger.error(`Erro ao criar novo usuário: ${error}`);
 			return null;
 		}
 	}

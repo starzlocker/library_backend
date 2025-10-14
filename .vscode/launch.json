@@ -17,5 +17,11 @@
                 "${workspaceFolder}/**/*.js"
             ]
         }
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Run Server",
+            "program": "src/server.js"
+        }
     ]
 }
