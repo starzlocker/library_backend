@@ -1,6 +1,6 @@
 jest.mock('../repositories/User.js');
 jest.mock('../database/setup.js');
-
+// testes e afim
 const {AuthController} = require('../controllers/authController.js');
 const {User} = require('../repositories/User.js');
 const bcrypt = require('bcrypt');
