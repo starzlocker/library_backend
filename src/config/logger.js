@@ -2,7 +2,7 @@ const winston = require('winston');
 const path = require('path');
 // testando 2
 const logger = winston.createLogger({
-  level: 'info', // nível mínimo que será logado (debug < info < warn < error) MAOEI
+  level: 'info', // nível mínimo que será logado (debug < info < warn < error) MAOEI teste
   format: winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.printf(({ timestamp, level, message }) => {
