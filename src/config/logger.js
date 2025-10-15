@@ -10,7 +10,7 @@ const logger = winston.createLogger({
     })
   ),
   transports: [
-    new winston.transports.Console(), // mostra no terminal
+    new winston.transports.Console(), // mostra no terminal sdada
     new winston.transports.File({ filename: path.join(__dirname, '../../logs/info.log'), level:"info"}), // grava no arquivo
 	new winston.transports.File({ filename: path.join(__dirname, '../../logs/warn.log'), level:"warn"}),
 	new winston.transports.File({ filename: path.join(__dirname, '../../logs/error.log'), level:"error"}), // grava no arquivo
