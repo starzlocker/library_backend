@@ -2,7 +2,7 @@ const {AuthController} = require('../controllers/authController.js');
 const {User} = require('../repositories/User.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+// testando
 test("login", async() => {
 	const req = {
 		body: {
