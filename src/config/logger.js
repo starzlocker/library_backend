@@ -1,6 +1,6 @@
 const winston = require('winston');
 const path = require('path');
-// testando 3
+// testando 3 2 1
 const logger = winston.createLogger({
   level: 'info', // nível mínimo que será logado (debug < info < warn < error) MAOEI teste 2
   format: winston.format.combine(
