@@ -1,8 +1,8 @@
-Livraria Modelo - Backend
+# Livraria Modelo - Backend
 
 Este repositório contém o backend de uma aplicação de livraria construída com Node.js e Express. O propósito principal é servir uma API REST para gerenciamento de livros, autores, gêneros e autenticação de usuários para o meu outro projeto <https://github.com/starzlocker/site_library>.
 
-Principais tecnologias
+## Principais tecnologias
 
 - Node.js
 - Express
@@ -15,7 +15,7 @@ Principais tecnologias
 - Winston (logging)
 - Knex (migrations)
 
-Instalação
+## Instalação
 
 1. Clone o repositório
 
@@ -35,7 +35,7 @@ JWT_SECRET=sua_chave_secreta
 JWT_EXPIRES=3600
 ```
 
-Execução
+## Execução
 
 Para rodar o servidor em desenvolvimento:
 
@@ -49,7 +49,7 @@ Para rodar apenas a aplicação (produção):
 npm start
 ```
 
-Rotas da API
+## Rotas da API
 
 O servidor expõe endpoints REST sob o prefixo `/api`. As principais rotas são:
 
@@ -68,7 +68,7 @@ Livros (`/api/books`)
 - `PUT /api/books/:id` - Atualiza um livro existente.
 - `DELETE /api/books/:id` - Remove um livro.
 
-Validação de dados (express-validator)
+## Validação de dados (express-validator)
 
 O projeto usa `express-validator` para validar dados de entrada nas rotas de autenticação. Por exemplo:
 
@@ -78,7 +78,7 @@ O projeto usa `express-validator` para validar dados de entrada nas rotas de aut
 
 Erros de validação retornam status HTTP 404 (ou outro código, dependendo do endpoint) com a lista de erros.
 
-Autenticação JWT
+## Autenticação JWT
 
 Depois de fazer login ou signup, o usuário recebe um token JWT que deve ser enviado no header `Authorization` das requisições protegidas:
 
@@ -90,7 +90,7 @@ O token tem expiração configurada via `JWT_EXPIRES` (em segundos). O middlewar
 
 Existe também uma blacklist em memória para tokens invalidados via logout. Quando um usuário faz logout, o token é adicionado à blacklist temporariamente (até expirar naturalmente).
 
-Testes
+## Testes
 
 Este projeto usa Jest para os testes unitários. Para rodar a suíte de testes:
 
@@ -98,20 +98,20 @@ Este projeto usa Jest para os testes unitários. Para rodar a suíte de testes:
 npm test
 ```
 
-Observações sobre testes
+## Observações sobre testes
 
 - Os testes unitários usam mocks para evitar conexões reais ao banco de dados.
 - As variáveis de ambiente necessárias para os testes (por exemplo `JWT_SECRET`) são definidas nos próprios testes ou em arquivos de setup do Jest.
 
-Banco de dados
+## Banco de dados
 
 As migrations estão no diretório `migrations/`. Para aplicar migrations localmente use a ferramenta que preferir (por exemplo Knex) apontando para a `CONNECTION_STRING` correta.
 
-CI / GitHub Actions
+## CI / GitHub Actions
 
 O repositório inclui configurações de GitHub Actions que executam a suíte de testes automaticamente em pull requests e pushes para branches principais. A pipeline roda os testes e publica o resultado como parte do fluxo de integração contínua.
 
-Estrutura do projeto (resumida)
+## Estrutura do projeto (resumida)
 
 - `src/` - código fonte
   - `controllers/` - controladores da API
