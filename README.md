@@ -6,6 +6,10 @@ Principais tecnologias
 
 - Node.js
 - Express
+- Express-validator
+- JSON Web Tokens (JWT) para autenticação
+- bcrypt para hash de senhas
+- dotenv para variáveis de ambiente
 - PostgreSQL (produção/local)
 - Jest (testes unitários)
 - Winston (logging)
@@ -44,6 +48,47 @@ Para rodar apenas a aplicação (produção):
 ```
 npm start
 ```
+
+Rotas da API
+
+O servidor expõe endpoints REST sob o prefixo `/api`. As principais rotas são:
+
+Autenticação (`/api/auth`)
+
+- `POST /api/auth/login` - Autentica um usuário com email e senha. Retorna um token JWT.
+- `POST /api/auth/signup` - Cria uma nova conta de usuário. Retorna um token JWT.
+- `POST /api/auth/logout` - Invalida o token JWT atual (adiciona à blacklist temporária).
+- `POST /api/auth/test_auth` - Endpoint protegido para testar se o token JWT é válido (requer autenticação).
+
+Livros (`/api/books`)
+
+- `GET /api/books` - Lista livros. Aceita query params opcionais: `title`, `author`, `year`.
+- `GET /api/books/:id` - Busca livro por título (via query param `id.book_title`).
+- `POST /api/books` - Cria um novo livro.
+- `PUT /api/books/:id` - Atualiza um livro existente.
+- `DELETE /api/books/:id` - Remove um livro.
+
+Validação de dados (express-validator)
+
+O projeto usa `express-validator` para validar dados de entrada nas rotas de autenticação. Por exemplo:
+
+- No login e signup, o campo `email` é validado para garantir formato de email válido.
+- No signup, a `password` deve ter no mínimo 6 caracteres.
+- Os campos `name` e `last_name` são obrigatórios no signup.
+
+Erros de validação retornam status HTTP 404 (ou outro código, dependendo do endpoint) com a lista de erros.
+
+Autenticação JWT
+
+Depois de fazer login ou signup, o usuário recebe um token JWT que deve ser enviado no header `Authorization` das requisições protegidas:
+
+```
+Authorization: Bearer <seu_token_jwt>
+```
+
+O token tem expiração configurada via `JWT_EXPIRES` (em segundos). O middleware `verifyJWT` no `AuthController` valida o token e armazena os dados decodificados em `res.locals.token` para uso nos próximos middlewares ou controladores.
+
+Existe também uma blacklist em memória para tokens invalidados via logout. Quando um usuário faz logout, o token é adicionado à blacklist temporariamente (até expirar naturalmente).
 
 Testes
 
