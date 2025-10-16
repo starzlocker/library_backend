@@ -1,8 +1,8 @@
-Livraria Modelo - Backend
+# Livraria Modelo - Backend
 
 Este repositório contém o backend de uma aplicação de livraria construída com Node.js e Express. O propósito principal é servir uma API REST para gerenciamento de livros, autores, gêneros e autenticação de usuários para o meu outro projeto <https://github.com/starzlocker/site_library>.
 
-Principais tecnologias
+## Principais tecnologias
 
 - Node.js
 - Express
@@ -11,7 +11,7 @@ Principais tecnologias
 - Winston (logging)
 - Knex (migrations)
 
-Instalação
+## Instalação
 
 1. Clone o repositório
 
@@ -31,7 +31,7 @@ JWT_SECRET=sua_chave_secreta
 JWT_EXPIRES=3600
 ```
 
-Execução
+## Execução
 
 Para rodar o servidor em desenvolvimento:
 
@@ -45,7 +45,7 @@ Para rodar apenas a aplicação (produção):
 npm start
 ```
 
-Testes
+## Testes
 
 Este projeto usa Jest para os testes unitários. Para rodar a suíte de testes:
 
@@ -53,20 +53,20 @@ Este projeto usa Jest para os testes unitários. Para rodar a suíte de testes:
 npm test
 ```
 
-Observações sobre testes
+## Observações sobre testes
 
 - Os testes unitários usam mocks para evitar conexões reais ao banco de dados.
 - As variáveis de ambiente necessárias para os testes (por exemplo `JWT_SECRET`) são definidas nos próprios testes ou em arquivos de setup do Jest.
 
-Banco de dados
+## Banco de dados
 
 As migrations estão no diretório `migrations/`. Para aplicar migrations localmente use a ferramenta que preferir (por exemplo Knex) apontando para a `CONNECTION_STRING` correta.
 
-CI / GitHub Actions
+## CI / GitHub Actions
 
 O repositório inclui configurações de GitHub Actions que executam a suíte de testes automaticamente em pull requests e pushes para branches principais. A pipeline roda os testes e publica o resultado como parte do fluxo de integração contínua.
 
-Estrutura do projeto (resumida)
+## Estrutura do projeto (resumida)
 
 - `src/` - código fonte
   - `controllers/` - controladores da API
