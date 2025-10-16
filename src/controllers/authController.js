@@ -5,6 +5,7 @@ const {UserModel} = require('../models/User');
 
 const jwt = require('jsonwebtoken');
 const BLACKLIST = {};
+//teste
 class AuthController {
 	static async login (req, res) {
 		const {email,password} = req.body;
