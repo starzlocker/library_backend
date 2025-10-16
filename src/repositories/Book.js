@@ -110,25 +110,26 @@ class Book{
 	}
 
 	
-	static async getBookByTitle (title)  {
+	static async getBookById (id)  {
 		const client = await dbConnect();
-		const res = await client.query("SELECT * FROM books WHERE title ILIKE $1", [`%${title}%`]);
+		const res = await client.query("SELECT * FROM books WHERE id = $1", [id]);
 		client.release();
 		return res.rows;
 	}
-	
-	static async updateBook(book)  {
+
+	static async updateBook(id, book)  {
 		const client = await dbConnect();
-		const res = await client.query("UPDATE books SET author_id=$1, genre_id=$2, year=$3, cover_url=$4, description=$5 WHERE title ILIKE $6", [book.author_id, book.genre_id, book.year, book.cover_url, book.description, `%${book.title}%`]);
+		const res = await client.query("UPDATE books SET author_id=$1, genre_id=$2, year=$3, cover_url=$4, description=$5 WHERE id = $6", [book.author_id, book.genre_id, book.year, book.cover_url, book.description, id]);
 	
 		client.release();
 		return res;
 	}
 	
-	static async deleteBook(book_name)  {
+	static async deleteBook(id)  {
 		const client = await dbConnect();
-		await client.query("DELETE FROM books where title ILIKE $1", [`%${book_name}%`]);
+		const res = await client.query("DELETE FROM books where id = $1", [id]);
 		client.release();
+		return res;
 	}
 	
 	static isBooksOnTheTable () {

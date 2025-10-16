@@ -1,15 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const bookController = require('../controllers/bookController');
+const {AuthController} = require("../controllers/authController")
+const { check } =  require('express-validator');
 
 router.get('/', bookController.getBooks);
 
-router.get('/:id', bookController.getBookByTitle);
+router.get('/:id', bookController.getBookById);
 
-router.post('/', bookController.createBook);
+router.post('/', [
+	AuthController.verifyJWT
+], bookController.createBook);
 
-router.put('/:id', bookController.updateBook)
+router.put('/:id', [
+	AuthController.verifyJWT
+], bookController.updateBook)
 
-router.delete('/:id', bookController.deleteBook)
+router.delete('/:id', [
+	AuthController.verifyJWT
+], bookController.deleteBook)
 
 module.exports = router;

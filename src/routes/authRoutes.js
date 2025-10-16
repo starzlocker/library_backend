@@ -22,7 +22,9 @@ router.post('/signup', [
 
 router.post('/logout', AuthController.logout);
 
-router.post('/test_auth', AuthController.verifyJWT, 	(req, res) => {
+router.post('/test_auth', [
+	AuthController.verifyJWT,
+], 	(req, res) => {
 	res.json({
 		success: true,
 		message: "Usuário autorizado! Token OK"
