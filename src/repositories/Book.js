@@ -33,7 +33,7 @@ class Book{
 		const client = await dbConnect();
 
 		let query = [
-			" FROM books b"
+			"SELECT * FROM books b "
 		] 
 		const whereValues = []
 		const whereQuery = []

@@ -7,7 +7,6 @@ const {logger} = require("../config/logger");
 
 const getBooks = async (req, res) => {
     try {
-        logger.info("Testando")
         const {
             title,
             author,
@@ -32,7 +31,7 @@ const getBooks = async (req, res) => {
             data: books
         })
     } catch (e) {
-        logger.error(`Erro ao buscar livros: ${e}`)
+        logger.error(`Erro ao buscar livros: ${e.stack}`)
         res.status(500).json({
             success: false,
             error: e.message
@@ -120,7 +119,7 @@ const deleteBook = async (req, res) => {
         })
 
     } catch (e) {
-        logger.error(`Erro ao deletar livro: ${e}`);
+        logger.error(`Erro ao deletar livro: ${e.stack}`);
         res.status(500).json({
             success: false,
             error: e.message
@@ -178,7 +177,7 @@ const createBook = async (req, res) => {
             data: createdBook
         })
     } catch (error) {
-        logger.error(`Erro ao criar livro: ${error}`);
+        logger.error(`Erro ao criar livro: ${error.stack}`);
         return res.status(500).json({
             success: false,
             error: error.message
