@@ -76,20 +76,21 @@ const updateBook = async (req, res) => {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const id = req.params.id;
-        if (!id || typeof(id) != 'string') {
+        const data = req.body;
+
+        data.id = req.params.id;
+        if (!data.id || typeof(data.id) != 'string') {
             res.status(400).json({
                 message: 'Requisição inválida, o id do livro não foi fornecido.'
             })
         }
 
-        const data = req.body;
-        if (!data?.book || typeof(data.book) != 'object') {
+        if (!data || typeof(data) != 'object') {
             res.status(400).json({
                 message: 'Requisição inválida, o objeto do livro é inválido.'
             })
         }
-        const book = await Book.updateBook(id, data.book);
+        const book = await Book.updateBook(data);
 
         if (!book) {
             res.status(404).json({
@@ -155,6 +156,32 @@ const createBook = async (req, res) => {
         
         const data = req.body;
 
+        const mandatoryFields = [
+            "title",
+            "author",
+            "genre",
+            "year"
+        ]
+
+        const missingFields = [];
+
+        const dataKeys = Object.keys(data);
+
+        for (let k of mandatoryFields) {
+            if (!dataKeys.includes(k)) {
+                missingFields.push(k);
+            }
+        }
+
+        if (missingFields.length) {
+            return res.status(400).json({
+                message: `Dados imcompletos: ${missingFields.length > 1 ? 
+                    missingFields.join(", ") + " estão ausentes e são obrigatórios." :
+                    missingFields[0] + " está ausente e é obrigatório."
+                }`
+            });
+        }
+
         if (!data || typeof(data) != 'object') {
             return res.status(400).json({
                 message: 'Dados do livro inválidos.'
@@ -174,8 +201,8 @@ const createBook = async (req, res) => {
         const author_db = await Author.getAuthorByName(data.author);
         const genre_db = await Genre.getGenreByName(data.genre);
 
-        data.author = author_db?.id;
-        data.genre_id = genre_db?.id;
+        data.author_id = author_db?.id || null;
+        data.genre_id = genre_db?.id || null;
         
         const google = new GoogleBooks();
 

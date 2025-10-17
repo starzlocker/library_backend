@@ -74,7 +74,7 @@ class Book{
 		const google = new GoogleBooks();
 
 		const bookInfo = await google.searchBookByTitle(title);
-		const info = bookInfo?.volumeInfo
+		const info = bookInfo?.volumeInfo;
 		if (info) {
 			return {
 				cover_url: info?.imageLinks?.thumbnail || info?.imageLinks?.smallThumbnail || "",
@@ -94,7 +94,15 @@ class Book{
 			INSERT INTO books (
 				title, author_id, genre_id, year, 
 				cover_url, description, price
-			) VALUES ($1, $2, $3, $4, $5, $6, $7)
+			) VALUES (
+				$1, 
+				$2,
+				$3,
+				$4, 
+				$5, 
+				$6, 
+				$7
+			 )
 			RETURNING *
 		`, [
 			book.title,
@@ -114,15 +122,43 @@ class Book{
 		const client = await dbConnect();
 		const res = await client.query("SELECT * FROM books WHERE id = $1", [id]);
 		client.release();
-		return res.rows;
+		return new BookModel(res.rows[0]);
 	}
 
-	static async updateBook(id, book)  {
+	static async updateBook(data)  {
 		const client = await dbConnect();
-		const res = await client.query("UPDATE books SET author_id=$1, genre_id=$2, year=$3, cover_url=$4, description=$5 WHERE id = $6", [book.author_id, book.genre_id, book.year, book.cover_url, book.description, id]);
+
+		const fields = [];
+		const values = []
+		const bookModel = new BookModel();
+		const unallowedKeys = ["id", "created_at", "updated_at"];
+
+
+		let i = 1;
+		for (let k of Object.keys(bookModel)) {
+			if (unallowedKeys.includes(k)) {
+				continue;
+			}
+			if (data.hasOwnProperty(k)) {
+				fields.push(
+					`${k}=$${i++}`
+				);
+				values.push(data[k]);
+			}
+		}
+
+		if (!fields.length) {
+			throw new Error("Não existem valores válidos para o UPDATE.");
+		}
+
+		const query = "UPDATE books SET " + fields.join(", ") + ` WHERE id = $${i} RETURNING *`;
+
+		values.push(data.id);
+
+		const res = await client.query(query,values);
 	
 		client.release();
-		return res;
+		return new BookModel(res.rows[0]);
 	}
 	
 	static async deleteBook(id)  {

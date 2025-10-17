@@ -1,14 +1,16 @@
 class BookModel {
-    constructor(data) {
-        this.id = data.id;
-        this.title = data.title;
-        this.author = data.author;
-        this.author_id = data.author_id;
-        this.genre_id = data.genre_id;
-        this.genre = data.genre;
-        this.year = data.year;
-        this.cover_url = data.cover_url;
-        this.description = data.description;
+    constructor(data={}) {
+        this.id = data["id"] || null;
+        this.title = data["title"] || "";
+        this.author_id = data["author_id"] === "" ? null : (data["author_id"] || null);
+        this.genre_id = data["genre_id"] === "" ? null : (data["genre_id"] || null);
+        this.year = data["year"] === "" ? null : (data["year"] || null);
+        this.cover_url = data["cover_url"] || "";
+        this.description = data["description"] || "";
+        this.stock = data["stock"] === "" ? 0 : (data["stock"] || 0);
+        this.price = data["price"] === "" ? 0 : (data["price"] || 0);
+        this.createdAt = data.created_at || null;
+        this.updatedAt = data.updated_at || null;
     }
 
     validate() {
