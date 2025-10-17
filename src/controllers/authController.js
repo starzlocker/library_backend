@@ -95,7 +95,16 @@ class AuthController {
 	}
 
 	static async verifyJWT (req, res, next) {
-		const token = req.headers["authorization"].replace("Bearer ", '');
+		let token = req.headers["authorization"]
+
+		if (!token) {
+			return res.status(403).json({
+				success: false,
+				message: "Token não fornecido!"
+			});
+		}
+
+		token = token.replace("Bearer ", '');
 		
 		if (Object.hasOwn(BLACKLIST, token) && BLACKLIST[token]) {
 			return res.status(403).json({

@@ -23,7 +23,7 @@ const insertDefaultBooks = async (client, data) => {
 			`, [book.title, book.year, author_id, genre_id]);
 		}
 	} catch (e) {
-		logger.error(e);
+		logger.error(e.stack);
 	}
 }
 
@@ -36,7 +36,7 @@ const insertDefaultAuthors = async (client, data) => {
 			`, [book.author]);
 		}
 	} catch (e) {
-		logger.error(e);
+		logger.error(e.stack);
 	}
 }
 
@@ -49,7 +49,7 @@ const insertDefaultGenres = async (client, data) => {
 			`, [book.genre]);
 		}
 	} catch (e) {
-		logger.error(e);
+		logger.error(e.stack);
 	}
 }
 

@@ -40,7 +40,7 @@ class User {
 
 			return user.id;
 		} catch (error) {
-			logger.error(`Erro ao criar novo usuário: ${error}`);
+			logger.error(`Erro ao criar novo usuário: ${error.stack}`);
 			return null;
 		}
 	}

@@ -4,10 +4,10 @@ const {BookModel} = require('../models/Book')
 const {Genre} = require('../repositories/Genre')
 const {GoogleBooks} = require('../services/googleBookService')
 const {logger} = require("../config/logger");
+const { validationResult } = require('express-validator')
 
 const getBooks = async (req, res) => {
     try {
-        logger.info("Testando")
         const {
             title,
             author,
@@ -32,7 +32,7 @@ const getBooks = async (req, res) => {
             data: books
         })
     } catch (e) {
-        logger.error(`Erro ao buscar livros: ${e}`)
+        logger.error(`Erro ao buscar livros: ${e.stack}`)
         res.status(500).json({
             success: false,
             error: e.message
@@ -40,19 +40,19 @@ const getBooks = async (req, res) => {
     }
 }
 
-const getBookByTitle = async (req, res) => {
+const getBookById = async (req, res) => {
     try {
-        const data = req.query.id;
-        if (!data?.book_title || typeof(data.book_title) != 'string') {
+        const data = req.params.id;
+        if (!data || typeof(data) != 'string') {
             res.status(400).json({
-                message: 'Requisição inválida, o título do livro não foi fornecido.'
+                message: 'Requisição inválida, o id do título não foi fornecido.'
             })
         }
-        const book = await Book.getBookByTitle(data.book_title);
+        const book = await Book.getBookById(data);
 
         if (!book) {
             res.status(404).json({
-                message: `Livro ${data.book_title} não encontrado.`
+                message: `Livro ${data} não encontrado.`
             })
         }
 
@@ -71,13 +71,25 @@ const getBookByTitle = async (req, res) => {
 
 const updateBook = async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const id = req.params.id;
+        if (!id || typeof(id) != 'string') {
+            res.status(400).json({
+                message: 'Requisição inválida, o id do livro não foi fornecido.'
+            })
+        }
+
         const data = req.body;
         if (!data?.book || typeof(data.book) != 'object') {
             res.status(400).json({
                 message: 'Requisição inválida, o objeto do livro é inválido.'
             })
         }
-        const book = await Book.updateBook(data.book);
+        const book = await Book.updateBook(id, data.book);
 
         if (!book) {
             res.status(404).json({
@@ -100,13 +112,19 @@ const updateBook = async (req, res) => {
 
 const deleteBook = async (req, res) => {
     try {
-        const data = req.body;
-        if (!data?.book || typeof(data.book) != 'object') {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const id = req.params.id;
+        if (!id || typeof(id) != 'string') {
             res.status(400).json({
-                message: 'Requisição inválida, o objeto do livro é inválido.'
+                message: 'Requisição inválida, o id do livro não foi fornecido.'
             })
         }
-        const book = await Book.deleteBook(data.book);
+
+        const book = await Book.deleteBook(id);
 
         if (!book) {
             res.status(404).json({
@@ -120,7 +138,7 @@ const deleteBook = async (req, res) => {
         })
 
     } catch (e) {
-        logger.error(`Erro ao deletar livro: ${e}`);
+        logger.error(`Erro ao deletar livro: ${e.stack}`);
         res.status(500).json({
             success: false,
             error: e.message
@@ -130,6 +148,11 @@ const deleteBook = async (req, res) => {
 
 const createBook = async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        
         const data = req.body;
 
         if (!data || typeof(data) != 'object') {
@@ -178,7 +201,7 @@ const createBook = async (req, res) => {
             data: createdBook
         })
     } catch (error) {
-        logger.error(`Erro ao criar livro: ${error}`);
+        logger.error(`Erro ao criar livro: ${error.stack}`);
         return res.status(500).json({
             success: false,
             error: error.message
@@ -186,4 +209,4 @@ const createBook = async (req, res) => {
     }
 }
 
-module.exports = { getBookByTitle, getBooks, updateBook, deleteBook, createBook }
+module.exports = { getBookById: getBookById, getBooks, updateBook, deleteBook, createBook }

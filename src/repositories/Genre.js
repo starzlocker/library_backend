@@ -13,7 +13,7 @@ class Genre {
 
 			return new GenreModel(res.rows[0]);
 		} catch (error) {
-			logger.error(`Erro ao buscar autor por nome: ${error}`);
+			logger.error(`Erro ao buscar autor por nome: ${error.stack}`);
 		} finally {
 			client.release();
 		}
@@ -26,7 +26,7 @@ class Genre {
 			const res = await client.query("insert into genres (name) VALUES ($1) RETURNING *", [genre.name]);
 			return new GenreModel(res.rows[0]);
 		} catch (error) {
-			logger.error(`Erro ao inserir autor: ${error}`)
+			logger.error(`Erro ao inserir autor: ${error.stack}`)
 		} finally {
 			client.release();
 		}
