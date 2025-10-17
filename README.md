@@ -1,5 +1,7 @@
 # Livraria Modelo - Backend
 
+Acessível via [http://204.216.182.116:3000/api/books] // 90% do tempo
+
 Este repositório contém o backend de uma aplicação de livraria construída com Node.js e Express. O propósito principal é servir uma API REST para gerenciamento de livros, autores, gêneros e autenticação de usuários para o meu outro projeto <https://github.com/starzlocker/site_library>.
 
 ## Principais tecnologias
