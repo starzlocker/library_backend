@@ -11,14 +11,14 @@ router.post('/login', [
 		.isEmail(),
 ], AuthController.login);
 
-router.post('/signup', [
-	check("password", "A senha deve ter 6 ou mais dígitos.")
-		.isLength({min: 6}),
-	check("email", "Digite um e-mail válido!")
-		.isEmail(),
-	check("name", "Nome é obrigatório"),
-	check("last_name", "Sobrenome é obrigatório")
-], AuthController.signup);
+// router.post('/signup', [
+// 	check("password", "A senha deve ter 6 ou mais dígitos.")
+// 		.isLength({min: 6}),
+// 	check("email", "Digite um e-mail válido!")
+// 		.isEmail(),
+// 	check("name", "Nome é obrigatório"),
+// 	check("last_name", "Sobrenome é obrigatório")
+// ], AuthController.signup);
 
 router.post('/logout', AuthController.logout);
 
