@@ -1,4 +1,4 @@
-# Livraria Modelo - Backend
+# Library Management System - Backend
 
 Acessível via [http://204.216.182.116:3000/api/books] // 90% do tempo
 
