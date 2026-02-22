@@ -1,6 +1,6 @@
 VALID_ROWS = ['user', 'admin'];
 
-class UserModel {
+export class User {
 	constructor(name, last_name, email, password, role) {
 		this.id = null;
 		this.role = role;
@@ -42,4 +42,4 @@ class UserModel {
 	}
 }
 
-module.exports = { UserModel };
+module.exports = { UserModel: User };

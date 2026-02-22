@@ -1,9 +1,11 @@
-class GoogleBooks {
+export class GoogleBooks {
+  url: string
+
 	constructor() {
 		this.url = `https://www.googleapis.com/books/v1/volumes`
 	}
 
-	async searchBookByTitle(title) {
+	async searchBookByTitle(title:string) {
 		const query = `intitle:${encodeURIComponent(title)}&maxResults=1`;
 		const url = `${this.url}?q=${query}`;
 		const res = await fetch(url);
@@ -14,8 +16,9 @@ class GoogleBooks {
 
 		const data = await res.json();
 
-		return data?.items[0];
+    if(data && typeof data === 'object' && 'items' in data && Array.isArray(data.items) && data.items.length > 0) {
+      return data.items[0];
+    }
+
 	}
 }
-
-module.exports = { GoogleBooks }
