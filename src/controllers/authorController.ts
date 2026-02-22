@@ -5,6 +5,3 @@ const getAuthorByName = async (authorName) {
 
 	
 }
-
-
-module.exports = {getAuthorByName}

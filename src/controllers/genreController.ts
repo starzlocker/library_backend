@@ -1,4 +1,7 @@
-const getGenreByName = async (req, res) => {
+import type { Request, Response, NextFunction } from 'express';
+import { GenreRepository } from 'src/repositories/GenreRepository.js';
+
+const getGenreByName = async (req: Request, res: Response) => {
 	if (!req.params.genreName || typeof(req.params.genreName) != 'string' || !req.params.genreName.trim()) {
 		return res.status(400).json({
 			success: false,
@@ -7,7 +10,7 @@ const getGenreByName = async (req, res) => {
 	}
 
 	try {
-		const genre = await Genre.getGenreByName(req.params.genreName);
+		const genre = await GenreRepository.getGenreByName(req.params.genreName);
 		if (!genre) {
 			return res.status(404).json({
 				success: false,

@@ -1,6 +1,4 @@
-const express = require('express');
-const router = express.Router();
-const bookController = require('../controllers/bookController');
+import {bookController} from '../controllers/bookController.js';
 const {AuthController} = require("../controllers/authController")
 const { check } =  require('express-validator');
 
