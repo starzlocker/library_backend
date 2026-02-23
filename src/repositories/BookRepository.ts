@@ -50,6 +50,10 @@ export class BookRepository {
 
     const res = await db.run(query, whereValues);
 
+    if (res.rows.length === 0) {
+      return null;
+    }
+
     const books = res.rows.map((book) => {
       assertBookDTO(book);
       return book;
@@ -86,6 +90,10 @@ export class BookRepository {
       ],
     );
 
+    if (res.rows.length === 0) {
+      return null;
+    }
+
     const returnedBook = res.rows[0];
     assertBookDTO(returnedBook);
 
@@ -121,7 +129,9 @@ export class BookRepository {
     values.push(data.id);
 
     const res = await db.run(query, values);
-
+    if (res.rows.length === 0) {
+      return null;
+    }
     const dbBook = res.rows[0];
 
     assertBookDTO(dbBook)
@@ -131,7 +141,11 @@ export class BookRepository {
 
   static async deleteBook(id: number) {
     const res = await db.run('DELETE FROM books where id = $1', [id]);
+    if (res.rows.length === 0) {
+      return null;
+    }
     const dbBook = res.rows[0];
+
     assertBookDTO(dbBook)
     return dbBook;
   }
