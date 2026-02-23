@@ -22,7 +22,7 @@ export const getGenreByName = async (req: Request, res: Response) => {
   } catch {
     return res.status(400).json({
       success: false,
-      message: 'Nome do gênero não foi fornecido!',
+      message: INVALID_PARAMS,
     });
   }
 
@@ -31,7 +31,7 @@ export const getGenreByName = async (req: Request, res: Response) => {
     if (!dbGenre) {
       return res.status(404).json({
         success: false,
-        message: `Gênero ${name} não encontrado.`,
+        message: NOT_FOUND,
       });
     }
 
@@ -43,7 +43,7 @@ export const getGenreByName = async (req: Request, res: Response) => {
     });
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
-    console.error(`Erro ao buscar gênero por nome: ${err}`);
+    console.error(`${SERVER_ERROR}: ${err}`);
     return res.status(500).json({
       success: false,
       error: err,
