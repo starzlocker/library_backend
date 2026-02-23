@@ -1,5 +1,5 @@
 import { dbConnect } from '../database/setup.js';
-import { UserModel } from '../models/User.js';
+import { UserModel } from '../models/User';
 import { logger } from '../config/logger.js';
 
 export class UserRepository {

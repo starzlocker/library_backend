@@ -18,5 +18,3 @@ export const db = {
     return res;
   }
 }
-
-console.log(db.run('select * from authors'))
