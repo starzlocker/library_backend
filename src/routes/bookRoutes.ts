@@ -1,21 +1,22 @@
-import {bookController} from '../controllers/bookController.js';
+import { Router } from 'express';
+import * as BookControler from '../controllers/BookController.js';
 const {AuthController} = require("../controllers/authController")
 const { check } =  require('express-validator');
 
-router.get('/', bookController.getBooks);
+const router = Router()
 
-router.get('/:id', bookController.getBookById);
+router.get('/', BookControler.getBooks);
+
+router.get('/:id', BookControler.getBookById);
 
 router.post('/', [
 	AuthController.verifyJWT
-], bookController.createBook);
+], BookControler.createBook);
 
 router.put('/:id', [
 	AuthController.verifyJWT
-], bookController.updateBook)
+], BookControler.updateBook)
 
 router.delete('/:id', [
 	AuthController.verifyJWT
-], bookController.deleteBook)
-
-module.exports = router;
+], BookControler.deleteBook)
