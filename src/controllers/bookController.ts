@@ -8,16 +8,15 @@ import { GenreRepository } from '../repositories/GenreRepository.js';
 import { assertUpdateBookDTO } from '../DTOs/Book/UpdateBookDTO.js';
 import { assertGetBookDTO } from '../DTOs/Book/GetBookDTO.js';
 import { assertCreateBookDTO } from '../DTOs/Book/CreateBookDTO.js';
-import { bookDTOasBook } from '../utils/mappers.js';
+import { DBBookDTOasBook } from '../utils/mappers.js';
 
-const NOT_FOUND = 'Book not found'
-const SERVER_ERROR = 'Internal server error'
-const INVALID_QUERY_PARAMS = 'Invalid query params'
-const FAILED_FETCH = 'Failed to fetch books'
-const INVALID_DATA = 'Invalid data'
+const NOT_FOUND = 'Book not found';
+const SERVER_ERROR = 'Internal server error';
+const INVALID_QUERY_PARAMS = 'Invalid query params';
+const FAILED_FETCH = 'Failed to fetch books';
+const INVALID_DATA = 'Invalid data';
 const CREATE_ERROR = 'Failed to create book';
 const DELETE_ERROR = 'Failed to delete book';
-
 
 export const getBooks = async (req: Request, res: Response) => {
   try {
@@ -40,13 +39,12 @@ export const getBooks = async (req: Request, res: Response) => {
       });
     }
 
-    const books = dbBooks.map(b => bookDTOasBook(b));
-  
+    const books = dbBooks.map((b) => DBBookDTOasBook(b));
+
     res.status(200).json({
       success: true,
       data: books,
     });
-
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
     logger.error(`: ${err}`);
@@ -77,7 +75,7 @@ export const getBookById = async (req: Request, res: Response) => {
       });
     }
 
-    const book = bookDTOasBook(dbBook);
+    const book = DBBookDTOasBook(dbBook);
 
     res.status(200).json({
       success: true,
@@ -108,14 +106,14 @@ export const updateBook = async (req: Request, res: Response) => {
     });
   }
 
-  const data = {...req.body, id: id};
+  const data = { ...req.body, id: id };
 
   try {
     assertUpdateBookDTO(data);
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
     return res.status(400).json({
-      message: `${INVALID_DATA}: ${err}`
+      message: `${INVALID_DATA}: ${err}`,
     });
   }
 
@@ -136,7 +134,7 @@ export const updateBook = async (req: Request, res: Response) => {
     });
   }
 
-  const book = bookDTOasBook(dbBook);
+  const book = DBBookDTOasBook(dbBook);
 
   return res.status(200).json({
     success: true,
@@ -169,7 +167,7 @@ export const deleteBook = async (req: Request, res: Response) => {
       });
     }
 
-    const book = bookDTOasBook(dbBook)
+    const book = DBBookDTOasBook(dbBook);
 
     return res.status(200).json({
       success: true,
@@ -204,11 +202,13 @@ export const createBook = async (req: Request, res: Response) => {
 
     const google = new GoogleBooks();
 
-    const {description, price, coverUrl} = await google.getBookInfo(data.title);
+    const { description, price, coverUrl } = await google.getBookInfo(
+      data.title,
+    );
 
-    data.description = description || data.description
-    data.price = price || data.price
-    data.cover_url = coverUrl || data.cover_url
+    data.description = description || data.description;
+    data.price = price || data.price;
+    data.cover_url = coverUrl || data.cover_url;
 
     const dbBook = await BookRepository.createBook(data);
 
@@ -218,13 +218,12 @@ export const createBook = async (req: Request, res: Response) => {
       });
     }
 
-    const book = bookDTOasBook(dbBook);
+    const book = DBBookDTOasBook(dbBook);
 
     res.json({
       success: true,
       data: book,
     });
-
   } catch (e) {
     if (e instanceof Error) {
       logger.error(`${CREATE_ERROR}: ${e.stack}`);

@@ -1,10 +1,10 @@
 import { db } from '../config/database.js';
-import { assertBookDTO } from '../DTOs/Book/BookDTO.js';
+import { assertDBBookDTO } from '../DTOs/Book/DBBookDTO.js';
 import type { UpdateBookDTO } from '../DTOs/Book/UpdateBookDTO.js';
 import type { GetBookDTO } from '../DTOs/Book/GetBookDTO.js';
 import type { CreateBookDTO } from '../DTOs/Book/CreateBookDTO.js';
 
-const INVALID_UPDATE_VALUES = 'There are no valid values for the update query'
+const INVALID_UPDATE_VALUES = 'There are no valid values for the update query';
 
 export class BookRepository {
   static async getBooks(queryParams: GetBookDTO) {
@@ -55,7 +55,7 @@ export class BookRepository {
     }
 
     const books = res.rows.map((book) => {
-      assertBookDTO(book);
+      assertDBBookDTO(book);
       return book;
     });
 
@@ -95,7 +95,7 @@ export class BookRepository {
     }
 
     const returnedBook = res.rows[0];
-    assertBookDTO(returnedBook);
+    assertDBBookDTO(returnedBook);
 
     return returnedBook;
   }
@@ -103,7 +103,7 @@ export class BookRepository {
   static async getBookById(id: number) {
     const res = await db.run('SELECT * FROM books WHERE id = $1', [id]);
     const returnedBook = res.rows[0];
-    assertBookDTO(returnedBook);
+    assertDBBookDTO(returnedBook);
     return returnedBook;
   }
 
@@ -116,7 +116,7 @@ export class BookRepository {
     for (let key in data) {
       const typedKey = key as keyof UpdateBookDTO;
       fields.push(`${key}=$${i++}`);
-      values.push(data[typedKey]); 
+      values.push(data[typedKey]);
     }
 
     if (!fields.length) {
@@ -134,7 +134,7 @@ export class BookRepository {
     }
     const dbBook = res.rows[0];
 
-    assertBookDTO(dbBook)
+    assertDBBookDTO(dbBook);
 
     return dbBook;
   }
@@ -146,7 +146,7 @@ export class BookRepository {
     }
     const dbBook = res.rows[0];
 
-    assertBookDTO(dbBook)
+    assertDBBookDTO(dbBook);
     return dbBook;
   }
 

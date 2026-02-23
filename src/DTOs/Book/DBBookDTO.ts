@@ -4,7 +4,7 @@ import {
   assertString,
 } from '../../utils/TypeAssertions.js';
 
-export interface BookDTO {
+export interface DBBookDTO {
   id: number;
   title: string;
   author_id: number;
@@ -18,7 +18,7 @@ export interface BookDTO {
   updated_at: Date;
 }
 
-export function assertBookDTO(data: unknown): asserts data is BookDTO {
+export function assertDBBookDTO(data: unknown): asserts data is DBBookDTO {
   assertObject(data);
   assertString(data.title);
   assertNumber(data.author_id);
