@@ -17,9 +17,8 @@ export class AuthorRepository {
       const author = res.rows[0];
       assertAuthorDTO(author);
       return author;
-    } catch (error) {
-      const err = error instanceof Error ? error.message : String(error);
-      logger.error(`Failed to fetch author: ${err}`);
+    } catch (e) {
+      logger.error(`Failed to fetch author: ${(e instanceof Error ? e.stack : '')}`);
     }
   }
 
@@ -32,9 +31,8 @@ export class AuthorRepository {
       const author = res.rows[0];
       assertAuthorDTO(author);
       return author;
-    } catch (error) {
-      const err = error instanceof Error ? error.message : String(error);
-      logger.error(`Failed to fetch author: ${err}`);
+    } catch (e) {
+      logger.error(`Failed to fetch author: ${(e instanceof Error ? e.stack : '')}`);
     }
   }
 
@@ -53,10 +51,8 @@ export class AuthorRepository {
 
       assertAuthorDTO(book);
       return book;
-    } catch (error) {
-      const err = error instanceof Error ? error.message : String(error);
-
-      logger.error(`Failed to insert author: ${err}`);
+    } catch (e) {
+      logger.error(`Failed to insert author: ${(e instanceof Error ? e.stack : '')}`);
     }
   }
 
@@ -74,9 +70,8 @@ export class AuthorRepository {
       assertAuthorDTO(author);
 
       return author;
-    } catch (error) {
-      const err = error instanceof Error ? error.message : String(error);
-      logger.error(`Failed to fetch author: ${err}`);
+    } catch (e) {
+      logger.error(`Failed to fetch author: ${(e instanceof Error ? e.stack : '')}`);
     }
   }
 
@@ -89,9 +84,8 @@ export class AuthorRepository {
       const author = res.rows[0];
       assertAuthorDTO(author);
       return author;
-    } catch (error) {
-      const err = error instanceof Error ? error.message : String(error);
-      logger.error(`Failed to fetch author: ${err}`);
+    } catch (e) {
+      logger.error(`Failed to fetch author: ${(e instanceof Error ? e.stack : '')}`);
     }
   }
 }

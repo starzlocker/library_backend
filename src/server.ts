@@ -1,14 +1,12 @@
 import cors from 'cors';
-import path from 'node:path';
 import { env } from 'node:process';
 import express from 'express';
+import bookRoutes from './routes/bookRoutes.js'
 
 const PORT = env.PORT;
 const URL = env.CLIENT_URL;
 
 const router = express.Router();
-
-const bookRoutes = require('./routes/bookRoutes');
 
 router.use('/books', bookRoutes);
 
@@ -22,5 +20,5 @@ app.use(cors({
 app.use('/api', router)
 
 app.listen(PORT, () => {
-    console.log(`Server running in ${URL}:${PORT}`)
+    console.log(`Server listening on port ${PORT}`)
 })

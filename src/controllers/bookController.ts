@@ -1,6 +1,6 @@
 import { BookRepository } from '../repositories/BookRepository.js';
 import { GoogleBooks } from '../services/googleBookService.js';
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { logger } from '../config/logger.js';
 import { AuthorRepository } from '../repositories/AuthorRepository.js';
@@ -13,7 +13,7 @@ import { DBBookDTOasBook } from '../utils/mappers.js';
 const NOT_FOUND = 'Book not found';
 const SERVER_ERROR = 'Internal server error';
 const INVALID_QUERY_PARAMS = 'Invalid query params';
-const FAILED_FETCH = 'Failed to fetch books';
+const GET_ERROR = 'Failed to get books';
 const INVALID_DATA = 'Invalid data';
 const CREATE_ERROR = 'Failed to create book';
 const DELETE_ERROR = 'Failed to delete book';
@@ -47,7 +47,7 @@ export const getBooks = async (req: Request, res: Response) => {
     });
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
-    logger.error(`: ${err}`);
+    logger.error(`${GET_ERROR}: ${(e instanceof Error ? e.stack : '')}`);
     res.status(500).json({
       success: false,
       error: err,
@@ -175,7 +175,7 @@ export const deleteBook = async (req: Request, res: Response) => {
     });
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
-    logger.error(`${DELETE_ERROR}: ${err}`);
+    logger.error(`${DELETE_ERROR}: ${(e instanceof Error ? e.stack : '')}`);
     res.status(500).json({
       success: false,
       error: err,
