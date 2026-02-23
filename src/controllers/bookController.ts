@@ -34,7 +34,7 @@ export const getBooks = async (req: Request, res: Response) => {
 
     const dbBooks = await BookRepository.getBooks(data);
 
-    if (!dbBooks.length) {
+    if (!dbBooks) {
       return res.status(404).json({
         message: NOT_FOUND,
       });
@@ -211,6 +211,12 @@ export const createBook = async (req: Request, res: Response) => {
     data.cover_url = coverUrl || data.cover_url
 
     const dbBook = await BookRepository.createBook(data);
+
+    if (!dbBook) {
+      return res.status(404).json({
+        message: NOT_FOUND,
+      });
+    }
 
     const book = bookDTOasBook(dbBook);
 
