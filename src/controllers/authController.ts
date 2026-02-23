@@ -1,7 +1,7 @@
 import { validationResult } from 'express-validator';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from '../repositories/UserRepository.js';
-import { UserModel } from '../models/User';
+import { UserModel } from '../models/User.js';
 import type { Request, Response, NextFunction } from 'express';
 
 interface GenericReq<T> extends Request {

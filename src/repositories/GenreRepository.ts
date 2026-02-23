@@ -29,9 +29,9 @@ export class GenreRepository {
       );
       return new Genre(res.rows[0]);
     } catch (error) {
-      logger.error(`Erro ao inserir autor: ${error.stack}`);
-    } finally {
-      client.release();
+      const err = error instanceof Error ? error.message : String(error);
+
+      logger.error(`Erro ao inserir autor: ${err}`);
     }
   }
 }
