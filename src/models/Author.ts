@@ -1,11 +1,16 @@
-import { isInstanceOfDate, isNonEmptyString, isNumber, isObject } from "../utils/TypeAssertions.js";
+import {
+  assertDate,
+  assertNonEmptyString,
+  assertNumber,
+  assertObject,
+} from '../utils/TypeAssertions.js';
 
-function assertAuthor(data:unknown): asserts data is Author {
-  isObject(data);
-  isNonEmptyString(data.name);
-  if (data.id) isNumber(data.id);
-  if (data.createdAt) isInstanceOfDate(data.createdAt)
-  if (data.updateAt) isInstanceOfDate(data.updateAt)
+function assertAuthor(data: unknown): asserts data is Author {
+  assertObject(data);
+  assertNonEmptyString(data.name);
+  if (data.id) assertNumber(data.id);
+  if (data.createdAt) assertDate(data.createdAt);
+  if (data.updateAt) assertDate(data.updateAt);
 }
 
 export class Author {

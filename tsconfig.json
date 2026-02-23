@@ -12,7 +12,6 @@
     // For nodejs:
     "lib": ["esnext"],
     "types": ["node"],
-    "baseUrl": ".",
     // and npm install -D @types/node
     "moduleResolution": "nodenext",
     // Other Outputs
