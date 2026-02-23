@@ -9,10 +9,8 @@ const INVALID_UPDATE_VALUES = 'There are no valid values for the update query';
 export class BookRepository {
   static async getBooks(queryParams: GetBookDTO) {
     const { title, author, year, genre } = queryParams;
-    let query = 'SELECT * FROM books b ';
     const whereValues = [];
     const whereQuery = [];
-    const joinQuery = [];
 
     if (author || year || genre) {
       whereQuery.push('WHERE');
@@ -23,8 +21,6 @@ export class BookRepository {
       }
 
       if (author) {
-        joinQuery.push('INNER JOIN authors a on b.author_id = a.id ');
-
         whereQuery.push(
           `a.name ilike '%' || $${whereValues.length + 1} || '%'`,
         );
@@ -32,8 +28,6 @@ export class BookRepository {
       }
 
       if (genre) {
-        joinQuery.push('INNER JOIN genres g on b.genre_id = g.id ');
-
         whereQuery.push(
           `g.name ilike '%' || $${whereValues.length + 1} || '%'`,
         );
@@ -45,7 +39,8 @@ export class BookRepository {
         whereValues.push(title);
       }
     }
-    if (joinQuery.length) query += joinQuery.join(' ');
+    let query = `select b.*, a.name as author, g.name as genre from books b INNER JOIN authors a on b.author_id = a.id INNER JOIN genres g on b.genre_id = g.id `;
+
     if (whereQuery.length) query += whereQuery.join(' and ');
 
     const res = await db.run(query, whereValues);

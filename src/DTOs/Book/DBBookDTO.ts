@@ -11,8 +11,10 @@ export interface DBBookDTO {
   title: string;
   author_id: number;
   genre_id: number;
+  author: string;
+  genre: string;
   year: number;
-  cover_url: string;
+  cover_url: string | null;
   description: string;
   stock: number;
   price: string; // NUMERIC é string
@@ -23,13 +25,17 @@ export interface DBBookDTO {
 export function assertDBBookDTO(data: unknown): asserts data is DBBookDTO {
   assertObject(data);
   assertString(data.title, 'title');
-  if (isNonNullable(data.author_id)) assertNumber(data.author_id, 'author_id');
-  if (isNonNullable(data.genre_id)) assertNumber(data.genre_id, 'genre_id');
+  assertNumber(data.author_id, 'author_id');
+  assertNumber(data.genre_id, 'genre_id');
+  assertString(data.author, 'author');
+  assertString(data.genre, 'genre');
+  
   assertNumber(data.year, 'year');
   if (isNonNullable(data.cover_url)) assertString(data.cover_url, 'cover_url');
-  if (isNonNullable(data.description)) assertString(data.description, 'description');
-  if (isNonNullable(data.stock)) assertNumber(data.stock, 'stock');
-  if (isNonNullable(data.price)) assertString(data.price, 'price');
+  assertString(data.description, 'description');
+  assertNumber(data.stock, 'stock');
+  assertString(data.price, 'price');
+
   assertDate(data.created_at, 'created_at');
   assertDate(data.updated_at, 'updated_at');
 }

@@ -7,46 +7,50 @@ import {
   isNonNullable,
 } from '../utils/TypeAssertions.js';
 
-function isBook(data: unknown): asserts data is Book {
+export function assertBookType(data: unknown): asserts data is Book {
   assertObject(data);
-  if (isNonNullable(data.id)) assertNumber(data.id);
+  assertNumber(data.id);
   assertNonEmptyString(data.title);
-  if (isNonNullable(data.authorId)) assertNumber(data.authorId);
-  if (isNonNullable(data.genreId)) assertNumber(data.genreId);
+  assertNumber(data.authorId);
+  assertNumber(data.genreId);
   assertNumber(data.year);
+  assertString(data.description);
+  assertNumber(data.stock);
+  assertNumber(data.price);
+  assertDate(data.createdAt);
+  assertDate(data.updatedAt);
   if (isNonNullable(data.coverUrl)) assertString(data.coverUrl);
-  if (isNonNullable(data.description)) assertString(data.description);
-  if (isNonNullable(data.stock)) assertNumber(data.stock);
-  if (isNonNullable(data.price)) assertNumber(data.price);
-  if (isNonNullable(data.createdAt)) assertDate(data.createdAt);
-  if (isNonNullable(data.updatedAt)) assertDate(data.updatedAt);
 }
 export class Book {
-  id: number | null;
+  id: number;
   title: string;
-  authorId: number | null;
-  genreId: number | null;
+  authorId: number;
+  author: string;
+  genre: string;
+  genreId: number;
   year: number;
   coverUrl: string | null;
-  description: string | null;
-  stock: number | null;
-  price: number | null;
-  createdAt: Date | null;
-  updatedAt: Date | null;
+  description: string;
+  stock: number;
+  price: number;
+  createdAt: Date;
+  updatedAt: Date;
 
   constructor(data: unknown) {
-    isBook(data);
-    this.id = data.id || null;
+    assertBookType(data);
+    this.id = data.id;
     this.title = data.title;
-    this.authorId = data.authorId || null;
-    this.genreId = data.genreId || null;
+    this.authorId = data.authorId;
+    this.author = data.author;
+    this.genreId = data.genreId;
+    this.genre = data.genre;
     this.year = data.year;
     this.coverUrl = data.coverUrl || null;
     this.description = data.description;
     this.stock = data.stock;
     this.price = data.price;
-    this.createdAt = data.createdAt || null;
-    this.updatedAt = data.updatedAt || null;
+    this.createdAt = data.createdAt;
+    this.updatedAt = data.updatedAt;
   }
 
   validate() {

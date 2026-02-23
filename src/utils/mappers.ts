@@ -12,6 +12,8 @@ export const DBBookDTOasBook = (data: DBBookDTO) => {
     title: data.title,
     authorId: data.author_id,
     genreId: data.genre_id,
+    genre: data.genre,
+    author: data.author,
     year: data.year,
     coverUrl: data.cover_url,
     description: data.description,
