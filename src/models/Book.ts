@@ -4,21 +4,22 @@ import {
   assertObject,
   assertDate,
   assertNonEmptyString,
+  isNonNullable,
 } from '../utils/TypeAssertions.js';
 
 function isBook(data: unknown): asserts data is Book {
   assertObject(data);
-  if (data.id) assertNumber(data.id);
+  if (isNonNullable(data.id)) assertNumber(data.id);
   assertNonEmptyString(data.title);
-  if (data.authorId) assertNumber(data.authorId);
-  if (data.genreId) assertNumber(data.genreId);
+  if (isNonNullable(data.authorId)) assertNumber(data.authorId);
+  if (isNonNullable(data.genreId)) assertNumber(data.genreId);
   assertNumber(data.year);
-  if (data.coverUrl) assertString(data.coverUrl);
-  assertString(data.description);
-  if (data.stock) assertNumber(data.stock);
-  assertNumber(data.price);
-  if (data.createdAt) assertDate(data.createdAt);
-  if (data.updatedAt) assertDate(data.updatedAt);
+  if (isNonNullable(data.coverUrl)) assertString(data.coverUrl);
+  if (isNonNullable(data.description)) assertString(data.description);
+  if (isNonNullable(data.stock)) assertNumber(data.stock);
+  if (isNonNullable(data.price)) assertNumber(data.price);
+  if (isNonNullable(data.createdAt)) assertDate(data.createdAt);
+  if (isNonNullable(data.updatedAt)) assertDate(data.updatedAt);
 }
 export class Book {
   id: number | null;
@@ -27,9 +28,9 @@ export class Book {
   genreId: number | null;
   year: number;
   coverUrl: string | null;
-  description: string;
+  description: string | null;
   stock: number | null;
-  price: number;
+  price: number | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 

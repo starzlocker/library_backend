@@ -1,18 +1,21 @@
-const winston = require('winston');
-const path = require('path');
-// testando 3 2 1
+import winston from "winston";
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 
-type Logger = {
-  timestamp: string;
-  level: 'info' | 'warn' | 'error' | 'debug';
-  message: string;
-};
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// type Logger = {
+//   timestamp: string;
+//   level: 'info' | 'warn' | 'error' | 'debug';
+//   message: string;
+// };
 
 export const logger = winston.createLogger({
   level: 'info', // nível mínimo que será logado (debug < info < warn < error) MAOEI teste 2 2 1 234
   format: winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    winston.format.printf(({ timestamp, level, message }: Logger) => {
+    winston.format.printf(({ timestamp, level, message }) => {
       return `[${timestamp}] ${level.toUpperCase()}: ${message}`;
     }),
   ),

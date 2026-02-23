@@ -18,8 +18,7 @@ export class GenreRepository {
       assertGenreDTO(genre);
       return genre;
     } catch (error) {
-      const err = error instanceof Error ? error.message : String(error);
-      logger.error(`Failed to fetch genre: ${err}`);
+      logger.error(`Failed to fetch genre: ${(error instanceof Error ? error.stack : '')}`);
     }
   }
 
@@ -35,8 +34,7 @@ export class GenreRepository {
       assertGenreDTO(genre);
       return genre;
     } catch (error) {
-      const err = error instanceof Error ? error.message : String(error);
-      logger.error(`Failed to fetch genre: ${err}`);
+      logger.error(`Failed to fetch genre: ${(error instanceof Error ? error.stack : '')}`);
     }
   }
 
@@ -56,9 +54,8 @@ export class GenreRepository {
       assertGenreDTO(book);
       return book;
     } catch (error) {
-      const err = error instanceof Error ? error.message : String(error);
 
-      logger.error(`Failed to insert genre: ${err}`);
+      logger.error(`Failed to insert genre: ${(error instanceof Error ? error.stack : '')}`);
     }
   }
 
@@ -77,8 +74,7 @@ export class GenreRepository {
 
       return genre;
     } catch (error) {
-      const err = error instanceof Error ? error.message : String(error);
-      logger.error(`Failed to fetch genre: ${err}`);
+      logger.error(`Failed to fetch genre: ${(error instanceof Error ? error.stack : '')}`);
     }
   }
 
@@ -92,8 +88,7 @@ export class GenreRepository {
       assertGenreDTO(genre);
       return genre;
     } catch (error) {
-      const err = error instanceof Error ? error.message : String(error);
-      logger.error(`Failed to fetch genre: ${err}`);
+      logger.error(`Failed to fetch genre: ${(error instanceof Error ? error.stack : '')}`);
     }
   }
 }

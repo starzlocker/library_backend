@@ -1,6 +1,6 @@
 import { Author } from './Author.js';
 import { Book } from './Book.js';
-import { User } from './User';
+// import { User } from '.';
 import { Genre } from './Genre.js';
 
-export { Author, Book, User, Genre };
+export { Author, Book, Genre };

@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response } from 'express';
 import { assertNonEmptyString, assertNonNullable } from '../utils/TypeAssertions.js';
 import { AuthorRepository } from '../repositories/AuthorRepository.js';
 import { DBAuthorDTOasAuthor } from '../utils/mappers.js';
