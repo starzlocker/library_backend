@@ -1,39 +1,24 @@
+import { isInstanceOfDate, isNonEmptyString, isNumber, isObject } from "../utils/TypeAssertions.js";
 
-
+function assertGenre(data:unknown): asserts data is Genre {
+  isObject(data);
+  isNonEmptyString(data.name);
+  if (data.id) isNumber(data.id);
+  if (data.createdAt) isInstanceOfDate(data.createdAt)
+  if (data.updateAt) isInstanceOfDate(data.updateAt)
+}
 export class Genre {
-  id: string
+  id: number | null
   name: string
-  createdAt: string | null
-  updatedAt: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
 
 	constructor(data:unknown) {
-    this.isGenre(data);
-		this.id = data.id;
+    assertGenre(data);
+		this.id = data.id || null;
 		this.name = data.name;
 		this.createdAt = data.createdAt || null;
 		this.updatedAt = data.updatedAt || null;
 	}
-
-  private isGenre(data:unknown): asserts data is Genre {
-    if (!data || typeof data !== 'object') {
-      throw TypeError('Expected data of type object')
-    }
-
-    if (!('id' in data) || typeof data.id !== 'string') {
-      throw TypeError('Expected required property [id]')
-    }
-
-    if (!('name' in data) || typeof data.id !== 'string') {
-      throw TypeError('Expected required property [name]')
-    }
-
-    if (!('createdAt' in data) || typeof data.id !== 'string') {
-      throw TypeError('Expected required property [createdAt]')
-    }
-
-    if (!('updatedAt' in data) || typeof data.id !== 'string') {
-      throw TypeError('Expected required property [updatedAt]')
-    }
-  }
 }
 

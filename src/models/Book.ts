@@ -1,117 +1,67 @@
-import { isString, isNumber } from '../utils/TypeAssertions.js'
+import {
+  isString,
+  isNumber,
+  isObject,
+  isInstanceOfDate,
+  isNonEmptyString,
+} from '../utils/TypeAssertions.js';
 
+function isBook(data: unknown): asserts data is Book {
+  isObject(data);
+  if (data.id) isNumber(data.id);
+  isNonEmptyString(data.title);
+  if (data.authorId) isNumber(data.authorId);
+  if (data.genreId) isNumber(data.genreId);
+  isNumber(data.year);
+  if (data.coverUrl) isString(data.coverUrl);
+  isString(data.description);
+  if (data.stock) isNumber(data.stock);
+  isNumber(data.price);
+  if (data.createdAt) isInstanceOfDate(data.createdAt);
+  if (data.updatedAt) isInstanceOfDate(data.updatedAt);
+}
 export class Book {
-  id: number;
+  id: number | null;
   title: string;
-  authorId: number;
-  genreId: number;
-  year: string;
-  coverUrl: string;
+  authorId: number | null;
+  genreId: number | null;
+  year: number;
+  coverUrl: string | null;
   description: string;
-  stock: number;
+  stock: number | null;
   price: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 
-  constructor(data:unknown) {
-    this.isBook(data);
-    this.id = data.id;
+  constructor(data: unknown) {
+    isBook(data);
+    this.id = data.id || null;
     this.title = data.title;
-    this.authorId = data.authorId;
-    this.genreId = data.genreId;
+    this.authorId = data.authorId || null;
+    this.genreId = data.genreId || null;
     this.year = data.year;
-    this.coverUrl = data.coverUrl;
+    this.coverUrl = data.coverUrl || null;
     this.description = data.description;
     this.stock = data.stock;
     this.price = data.price;
-    this.createdAt = data.createdAt
-    this.updatedAt = data.updatedAt
-  }
-
-  private isBook(data: unknown): asserts data is Book {
-    if (!data || typeof data !== 'object') {
-      throw TypeError('Expected data of type object')
-    }
-    if (!('id' in data)) {
-      throw TypeError('Expected required property [id]')
-    }
-    if (!('title' in data)) {
-      throw TypeError('Expected required property [title]')
-    }
-    if (!('authorId' in data)) {
-      throw new TypeError('Expected required property [authorId]')
-    }
-    if (!('genreId' in data)) {
-      throw new TypeError('Expected required property [genreId]')
-    }
-    if (!('year' in data)) {
-      throw new TypeError('Expected required property [year]')
-    }
-    if (!('coverUrl' in data)) {
-      throw new TypeError('Expected required property [coverUrl]')
-    }
-    if (!('description' in data)) {
-      throw new TypeError('Expected required property [description]')
-    }
-    if (!('stock' in data)) {
-      throw new TypeError('Expected required property [stock]')
-    }
-    if (!('price' in data)) {
-      throw new TypeError('Expected required property [price]')
-    }
-    if (!('createdAt' in data)) {
-      throw new TypeError('Expected required property [createdAt]')
-    }
-    if (!('updatedAt' in data)) {
-      throw new TypeError('Expected required property [updatedAt]')
-    }
-
-    isNumber(data.id)
-    isString(data.title)
-    isNumber(data.authorId)
-    isNumber(data.genreId)
-    isString(data.year)
-    isString(data.coverUrl)
-    isString(data.description)
-    isNumber(data.stock)
-    isNumber(data.price)
-    isString(data.createdAt)
-    isString(data.updatedAt)
+    this.createdAt = data.createdAt || null;
+    this.updatedAt = data.updatedAt || null;
   }
 
   validate() {
-    if (
-      !this.authorId ||
-      typeof this.authorId !== 'string' ||
-      !this.authorId.trim()
-    ) {
-      throw new Error('Nome do autor não foi fornecido.');
+    if (!this.authorId) {
+      throw new Error('Required author id');
+    }
+    if (!this.genreId) {
+      throw new Error('Required genre id');
     }
 
-    if (
-      !this.genreId ||
-      typeof this.genreId != 'string' ||
-      !this.genreId.trim()
-    ) {
-      throw new Error('Gênero do livro não foi fornecido.');
+    if (!this.title.trim()) {
+      throw new Error('Required book title');
     }
 
-    if (!this.title || typeof this.title != 'string' || !this.title.trim()) {
-      throw new Error('Título do livro não foi fornecido.');
-    }
-
-    if (this.year && (typeof this.year != 'number' || this.year < 0)) {
-      throw new Error('Ano do livro deve ser um número positivo.');
-    }
-
-    if (this.coverUrl && typeof this.coverUrl != 'string') {
-      throw new Error('URL da capa deve ser uma string.');
-    }
-
-    if (this.description && typeof this.description != 'string') {
-      throw new Error('Descrição do livro deve ser uma string.');
+    if (this.year < 0) {
+      throw new Error('Invalid published year');
     }
   }
 }
-
-module.exports = { BookModel: Book };
