@@ -1,24 +1,24 @@
 import {
-  isString,
-  isNumber,
-  isObject,
-  isInstanceOfDate,
-  isNonEmptyString,
+  assertString,
+  assertNumber,
+  assertObject,
+  assertDate,
+  assertNonEmptyString,
 } from '../utils/TypeAssertions.js';
 
 function isBook(data: unknown): asserts data is Book {
-  isObject(data);
-  if (data.id) isNumber(data.id);
-  isNonEmptyString(data.title);
-  if (data.authorId) isNumber(data.authorId);
-  if (data.genreId) isNumber(data.genreId);
-  isNumber(data.year);
-  if (data.coverUrl) isString(data.coverUrl);
-  isString(data.description);
-  if (data.stock) isNumber(data.stock);
-  isNumber(data.price);
-  if (data.createdAt) isInstanceOfDate(data.createdAt);
-  if (data.updatedAt) isInstanceOfDate(data.updatedAt);
+  assertObject(data);
+  if (data.id) assertNumber(data.id);
+  assertNonEmptyString(data.title);
+  if (data.authorId) assertNumber(data.authorId);
+  if (data.genreId) assertNumber(data.genreId);
+  assertNumber(data.year);
+  if (data.coverUrl) assertString(data.coverUrl);
+  assertString(data.description);
+  if (data.stock) assertNumber(data.stock);
+  assertNumber(data.price);
+  if (data.createdAt) assertDate(data.createdAt);
+  if (data.updatedAt) assertDate(data.updatedAt);
 }
 export class Book {
   id: number | null;

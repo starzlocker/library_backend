@@ -1,39 +1,55 @@
-import { BookRepository } from 'src/repositories/BookRepository.js';
-import { Author } from '../repositories/Author';
-import { BookModel } from '../models/Book.ts';
-import { Genre } from '../repositories/Genre';
-import { GoogleBooks } from '../services/googleBookService';
-import { Request, Response, NextFunction } from 'express'
+import { BookRepository } from '../repositories/BookRepository.js';
+import { GoogleBooks } from '../services/googleBookService.js';
+import type { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
-import { logger } from '../config/logger';
+import { logger } from '../config/logger.js';
+import { AuthorRepository } from '../repositories/AuthorRepository.js';
+import { GenreRepository } from '../repositories/GenreRepository.js';
+import { assertUpdateBookDTO } from '../DTOs/Book/UpdateBookDTO.js';
+import { assertGetBookDTO } from '../DTOs/Book/GetBookDTO.js';
+import { assertCreateBookDTO } from '../DTOs/Book/CreateBookDTO.js';
+import { bookDTOasBook } from '../utils/mappers.js';
+
+const NOT_FOUND = 'Book not found'
+const SERVER_ERROR = 'Internal server error'
+const INVALID_QUERY_PARAMS = 'Invalid query params'
+const FAILED_FETCH = 'Failed to fetch books'
+const INVALID_DATA = 'Invalid data'
+const CREATE_ERROR = 'Failed to create book';
+const DELETE_ERROR = 'Failed to delete book';
 
 
-const getBooks = async (req: Request, res: Response) => {
+export const getBooks = async (req: Request, res: Response) => {
   try {
-    const { title, author, year, genre } = req.query;
+    const data = req.query;
 
-    if ((title && typeof title !== 'string') || (author && typeof author !== 'string') || (year && typeof year !== 'string') || (genre && typeof genre !== 'string')) {
+    try {
+      assertGetBookDTO(data);
+    } catch (e) {
+      const err = e instanceof Error ? e.message : String(e);
       return res.status(400).json({
-        message: 'Invalid query params',
+        message: `${INVALID_QUERY_PARAMS}: ${err}`,
       });
     }
 
-    const books = await BookRepository.getBooks({title, author, year, genre});
+    const dbBooks = await BookRepository.getBooks(data);
 
-    if (!books.length) {
+    if (!dbBooks.length) {
       return res.status(404).json({
-        message: 'Not found',
+        message: NOT_FOUND,
       });
     }
 
-    res.json({
+    const books = dbBooks.map(b => bookDTOasBook(b));
+  
+    res.status(200).json({
       success: true,
       data: books,
     });
 
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
-    logger.error(`Failed to fetch books: ${err}`);
+    logger.error(`: ${err}`);
     res.status(500).json({
       success: false,
       error: err,
@@ -41,21 +57,27 @@ const getBooks = async (req: Request, res: Response) => {
   }
 };
 
-const getBookById = async (req: Request, res: Response) => {
+export const getBookById = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
-    if (!id || typeof id != 'string') {
-      res.status(400).json({
-        message: 'Invalid query params',
-      });
-    }
-    const book = await BookRepository.getBookById(id);
+    let id;
 
-    if (!book) {
-      res.status(404).json({
-        message: `Book not found`,
+    try {
+      id = Number(req.params.id);
+    } catch {
+      return res.status(400).json({
+        message: INVALID_QUERY_PARAMS,
       });
     }
+
+    const dbBook = await BookRepository.getBookById(id);
+
+    if (!dbBook) {
+      res.status(404).json({
+        message: NOT_FOUND,
+      });
+    }
+
+    const book = bookDTOasBook(dbBook);
 
     res.status(200).json({
       success: true,
@@ -70,76 +92,92 @@ const getBookById = async (req: Request, res: Response) => {
   }
 };
 
-const updateBook = async (req:Request, res:Response) => {
+export const updateBook = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  let id;
+
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const data = req.body;
-
-    data.id = req.params.id;
-    if (!data.id || typeof data.id != 'string') {
-      res.status(400).json({
-        message: 'Requisição inválida, o id do livro não foi fornecido.',
-      });
-    }
-
-    if (!data || typeof data != 'object') {
-      res.status(400).json({
-        message: 'Requisição inválida, o objeto do livro é inválido.',
-      });
-    }
-    const book = await BookRepository.updateBook(data);
-
-    if (!book) {
-      res.status(404).json({
-        message: `Livro não encontrado.`,
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: book,
-    });
-  } catch (e) {
-    res.status(500).json({
-      success: false,
-      error: e instanceof Error ? e.message : String(e),
+    id = Number(req.params.id);
+  } catch {
+    return res.status(400).json({
+      message: INVALID_QUERY_PARAMS,
     });
   }
+
+  const data = {...req.body, id: id};
+
+  try {
+    assertUpdateBookDTO(data);
+  } catch (e) {
+    const err = e instanceof Error ? e.message : String(e);
+    return res.status(400).json({
+      message: `${INVALID_DATA}: ${err}`
+    });
+  }
+
+  let dbBook;
+
+  try {
+    dbBook = await BookRepository.updateBook(data);
+  } catch (e) {
+    const err = e instanceof Error ? e.message : String(e);
+    return res.status(500).json({
+      message: `${SERVER_ERROR}: ${err}`,
+    });
+  }
+
+  if (!dbBook) {
+    return res.status(404).json({
+      message: NOT_FOUND,
+    });
+  }
+
+  const book = bookDTOasBook(dbBook);
+
+  return res.status(200).json({
+    success: true,
+    data: book,
+  });
 };
 
-const deleteBook = async (req: Request, res: Response) => {
+export const deleteBook = async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const id = req.params.id;
-    if (!id || typeof id != 'string') {
-      res.status(400).json({
-        message: 'Requisição inválida, o id do livro não foi fornecido.',
+    let id;
+
+    try {
+      id = Number(req.params.id);
+    } catch {
+      return res.status(400).json({
+        message: INVALID_QUERY_PARAMS,
       });
     }
 
-    const book = await BookRepository.deleteBook(id);
+    const dbBook = await BookRepository.deleteBook(id);
 
-    if (!book) {
-      res.status(404).json({
-        message: `Livro não encontrado.`,
+    if (!dbBook) {
+      return res.status(404).json({
+        message: NOT_FOUND,
       });
     }
 
-    res.status(200).json({
+    const book = bookDTOasBook(dbBook)
+
+    return res.status(200).json({
       success: true,
       data: book,
     });
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
-    logger.error(`Erro ao deletar livro: ${err}`);
+    logger.error(`${DELETE_ERROR}: ${err}`);
     res.status(500).json({
       success: false,
       error: err,
@@ -147,7 +185,7 @@ const deleteBook = async (req: Request, res: Response) => {
   }
 };
 
-const createBook = async (req: Request, res: Response) => {
+export const createBook = async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -156,89 +194,39 @@ const createBook = async (req: Request, res: Response) => {
 
     const data = req.body;
 
-    const mandatoryFields = ['title', 'author', 'genre', 'year'];
-
-    const missingFields = [];
-
-    const dataKeys = Object.keys(data);
-
-    for (let k of mandatoryFields) {
-      if (!dataKeys.includes(k)) {
-        missingFields.push(k);
-      }
-    }
-
-    if (missingFields.length) {
-      return res.status(400).json({
-        message: `Dados imcompletos: ${
-          missingFields.length > 1
-            ? missingFields.join(', ') + ' estão ausentes e são obrigatórios.'
-            : missingFields[0] + ' está ausente e é obrigatório.'
-        }`,
-      });
-    }
-
-    if (!data || typeof data != 'object') {
-      return res.status(400).json({
-        message: 'Dados do livro inválidos.',
-      });
-    }
-
-    if (!data.author || typeof data.author != 'string' || !data.author.trim()) {
-      return res.status(400).json({
-        message: 'Nome do autor não foi fornecido.',
-      });
-    }
-
-    if (!data.genre || typeof data.genre != 'string' || !data.genre.trim()) {
-      throw new Error('Gênero do livro não foi fornecido.');
-    }
+    assertCreateBookDTO(data);
 
     const author_db = await AuthorRepository.getAuthorByName(data.author);
-    const genre_db = await Genre.getGenreByName(data.genre);
+    const genre_db = await GenreRepository.getGenreByName(data.genre);
 
     data.author_id = author_db?.id || null;
     data.genre_id = genre_db?.id || null;
 
     const google = new GoogleBooks();
 
-    const book = new BookModel(data);
+    const {description, price, coverUrl} = await google.getBookInfo(data.title);
 
-    const bookInfo = await google.searchBookByTitle(book.title);
+    data.description = description || data.description
+    data.price = price || data.price
+    data.cover_url = coverUrl || data.cover_url
 
-    if (bookInfo?.volumeInfo) {
-      const volumeInfo = bookInfo.volumeInfo;
-      book.description = volumeInfo.description;
-      if (volumeInfo?.imageLinks) {
-        book.coverUrl = volumeInfo.imageLinks?.thumbnail;
-      }
-    }
+    const dbBook = await BookRepository.createBook(data);
 
-    if (bookInfo?.saleInfo) {
-      book.price = bookInfo?.saleInfo?.listPrice?.amount || 0.0;
-    }
+    const book = bookDTOasBook(dbBook);
 
-    const createdBook = await BookRepository.createBook(book);
     res.json({
       success: true,
-      data: createdBook,
+      data: book,
     });
+
   } catch (e) {
     if (e instanceof Error) {
-      logger.error(`Erro ao criar livro: ${e.stack}`);
+      logger.error(`${CREATE_ERROR}: ${e.stack}`);
     }
 
     return res.status(500).json({
       success: false,
-      error: e instanceof Error ? e.message : String(e)
+      error: e instanceof Error ? e.message : String(e),
     });
   }
-};
-
-module.exports = {
-  getBookById: getBookById,
-  getBooks,
-  updateBook,
-  deleteBook,
-  createBook,
 };

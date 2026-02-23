@@ -1,3 +1,9 @@
+export type BookInfo = {
+  description: string | null,
+  price: number | null,
+  coverUrl: string | null
+}
+
 export class GoogleBooks {
   url: string
 
@@ -21,4 +27,31 @@ export class GoogleBooks {
     }
 
 	}
+
+  async getBookInfo(title: string): Promise<BookInfo> {
+    const info = await this.searchBookByTitle(title);
+
+    let description;
+    let coverUrl;
+    let price;
+    
+    if (info?.volumeInfo) {
+      const volumeInfo = info.volumeInfo;
+      
+      description = volumeInfo.description || null;
+      if (volumeInfo?.imageLinks) {
+        coverUrl = volumeInfo.imageLinks?.thumbnail || null;
+      }
+    }
+
+    if (info?.saleInfo) {
+      price = info?.saleInfo?.listPrice?.amount || 0;
+    }
+
+    return {
+      description,
+      coverUrl,
+      price
+    }
+  }
 }
