@@ -1,5 +1,8 @@
+import type { DBAuthorDTO } from '../DTOs/Author/DBAuthorDTO.js';
+import type { AuthorDTO } from '../DTOs/AuthorDTO.js';
 import type { BookDTO } from '../DTOs/Book/BookDTO.js';
 import type { DBGenreDTO } from '../DTOs/Genre/DBGenreDTO.js';
+import type { Author } from '../models/Author.js';
 import { Book } from '../models/Book.js';
 import type { Genre } from '../models/Genre.js';
 
@@ -36,6 +39,15 @@ export const bookAsBookDTO = (data: Book) => {
 };
 
 export const DBGenreDTOasGenre = (data: DBGenreDTO): Genre => {
+  return {
+    id: data.id,
+    name: data.name,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
+};
+
+export const DBAuthorDTOasAuthor = (data: DBAuthorDTO): Author => {
   return {
     id: data.id,
     name: data.name,
