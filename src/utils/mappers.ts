@@ -1,5 +1,7 @@
 import type { BookDTO } from '../DTOs/Book/BookDTO.js';
+import type { DBGenreDTO } from '../DTOs/Genre/DBGenreDTO.js';
 import { Book } from '../models/Book.js';
+import type { Genre } from '../models/Genre.js';
 
 export const bookDTOasBook = (data: BookDTO) => {
   return new Book({
@@ -31,4 +33,13 @@ export const bookAsBookDTO = (data: Book) => {
     created_at: data.createdAt,
     updated_at: data.updatedAt,
   } as BookDTO;
+};
+
+export const DBGenreDTOasGenre = (data: DBGenreDTO): Genre => {
+  return {
+    id: data.id,
+    name: data.name,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
 };
