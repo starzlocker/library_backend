@@ -17,6 +17,7 @@ export interface DBBookDTO {
   cover_url: string | null;
   description: string;
   stock: number;
+  isbn: string | null;
   price: string; // NUMERIC é string
   created_at: Date;
   updated_at: Date;
@@ -32,6 +33,7 @@ export function assertDBBookDTO(data: unknown): asserts data is DBBookDTO {
   
   assertNumber(data.year, 'year');
   if (isNonNullable(data.cover_url)) assertString(data.cover_url, 'cover_url');
+  if (isNonNullable(data.isbn)) assertString(data.isbn, 'isbn');
   assertString(data.description, 'description');
   assertNumber(data.stock, 'stock');
   assertString(data.price, 'price');

@@ -1,5 +1,5 @@
 import { BookRepository } from '../repositories/BookRepository.js';
-import { GoogleBooks } from '../services/googleBookService.js';
+// import { GoogleBooks } from '../services/googleBookService.js';
 import type { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { logger } from '../config/logger.js';
@@ -9,6 +9,7 @@ import { assertUpdateBookDTO } from '../DTOs/Book/UpdateBookDTO.js';
 import { assertGetBookDTO } from '../DTOs/Book/GetBookDTO.js';
 import { assertCreateBookDTO } from '../DTOs/Book/CreateBookDTO.js';
 import { DBBookDTOasBook } from '../utils/mappers.js';
+import { isNonNullable } from '../utils/TypeAssertions.js';
 
 const NOT_FOUND = 'Book not found';
 const SERVER_ERROR = 'Internal server error';
@@ -17,13 +18,17 @@ const GET_ERROR = 'Failed to get books';
 const INVALID_DATA = 'Invalid data';
 const CREATE_ERROR = 'Failed to create book';
 const DELETE_ERROR = 'Failed to delete book';
+const CONFLICT = 'Book is already registered';
 
 export const getBooks = async (req: Request, res: Response) => {
   try {
-    const data = req.query;
+    const {page, ...params} = req.query;
+
+    let pageNumber;
 
     try {
-      assertGetBookDTO(data);
+      if (isNonNullable(page)) pageNumber = Number(page);
+      assertGetBookDTO(params);
     } catch (e) {
       const err = e instanceof Error ? e.message : String(e);
       return res.status(400).json({
@@ -31,23 +36,25 @@ export const getBooks = async (req: Request, res: Response) => {
       });
     }
 
-    const dbBooks = await BookRepository.getBooks(data);
+    const {data, totalItems} = await BookRepository.getBooks(params, pageNumber);
 
-    if (!dbBooks) {
+    if (!data) {
       return res.status(404).json({
         message: NOT_FOUND,
       });
     }
 
-    const books = dbBooks.map((b) => DBBookDTOasBook(b));
+    const books = data.map((b) => DBBookDTOasBook(b));
 
     res.status(200).json({
       success: true,
       data: books,
+      page: pageNumber ?? 0,
+      totalItems
     });
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
-    logger.error(`${GET_ERROR}: ${(e instanceof Error ? e.stack : '')}`);
+    logger.error(`${GET_ERROR}: ${e instanceof Error ? e.stack : ''}`);
     res.status(500).json({
       success: false,
       error: err,
@@ -117,10 +124,10 @@ export const updateBook = async (req: Request, res: Response) => {
     });
   }
 
-  let dbBook;
+  let updatedId;
 
   try {
-    dbBook = await BookRepository.updateBook(data);
+    updatedId = await BookRepository.updateBook(data);
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
     return res.status(500).json({
@@ -128,17 +135,15 @@ export const updateBook = async (req: Request, res: Response) => {
     });
   }
 
-  if (!dbBook) {
+  if (!updatedId) {
     return res.status(404).json({
       message: NOT_FOUND,
     });
   }
 
-  const book = DBBookDTOasBook(dbBook);
-
   return res.status(200).json({
     success: true,
-    data: book,
+    data: updatedId,
   });
 };
 
@@ -159,23 +164,21 @@ export const deleteBook = async (req: Request, res: Response) => {
       });
     }
 
-    const dbBook = await BookRepository.deleteBook(id);
+    const deletedId = await BookRepository.deleteBook(id);
 
-    if (!dbBook) {
+    if (!deletedId) {
       return res.status(404).json({
         message: NOT_FOUND,
       });
     }
 
-    const book = DBBookDTOasBook(dbBook);
-
     return res.status(200).json({
       success: true,
-      data: book,
+      data: deletedId,
     });
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
-    logger.error(`${DELETE_ERROR}: ${(e instanceof Error ? e.stack : '')}`);
+    logger.error(`${DELETE_ERROR}: ${e instanceof Error ? e.stack : ''}`);
     res.status(500).json({
       success: false,
       error: err,
@@ -194,35 +197,37 @@ export const createBook = async (req: Request, res: Response) => {
 
     assertCreateBookDTO(data);
 
-    const author_db = await AuthorRepository.getAuthorByName(data.author);
-    const genre_db = await GenreRepository.getGenreByName(data.genre);
+    const author_db = await AuthorRepository.createAuthorIfDontExists({
+      name: data.author.replace(/^\w|\s+\w/g, (e) => e.toUpperCase()),
+    });
+    const genre_db = await GenreRepository.createGenreIfDontExists({
+      name: data.genre.replace(/^\w|\s+\w/g, (e) => e.toUpperCase()),
+    });
 
-    data.author_id = author_db?.id || null;
-    data.genre_id = genre_db?.id || null;
+    data.author_id = author_db.id;
+    data.genre_id = genre_db.id;
 
-    const google = new GoogleBooks();
+    // const google = new GoogleBooks();
 
-    const { description, price, coverUrl } = await google.getBookInfo(
-      data.title,
-    );
+    // const { description='', price=0, coverUrl=null } = await google.getBookInfo(
+    //   data.title,
+    // );
 
-    data.description = description || data.description;
-    data.price = price || data.price;
-    data.cover_url = coverUrl || data.cover_url;
+    data.description = data.description ?? "Sem descrição";
+    data.price = data.price ?? 0;
+    data.cover_url = data.cover_url ?? null;
 
-    const dbBook = await BookRepository.createBook(data);
+    const createdId = await BookRepository.createBook(data);
 
-    if (!dbBook) {
-      return res.status(404).json({
-        message: NOT_FOUND,
+    if (createdId === -1) {
+      return res.status(409).json({
+        message: CONFLICT,
       });
     }
 
-    const book = DBBookDTOasBook(dbBook);
-
     res.json({
       success: true,
-      data: book,
+      data: createdId,
     });
   } catch (e) {
     if (e instanceof Error) {
