@@ -4,7 +4,7 @@ import type { DBGenreDTO } from '../DTOs/Genre/DBGenreDTO.js';
 import type { Author } from '../models/Author.js';
 import { Book } from '../models/Book.js';
 import type { Genre } from '../models/Genre.js';
-import * as Currency from './currency.js';
+import Currency from './currency.js';
 
 export const DBBookDTOasBook = (data: DBBookDTO) => {
   return new Book({
