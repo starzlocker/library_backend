@@ -8,17 +8,18 @@ import type { CreateAuthorDTO } from '../DTOs/Author/CreateAuthorDTO.js';
 export class AuthorRepository {
   static async getAuthorByName(authorName: string) {
     try {
-      const res = await db.run('select * from authors where name = $1', [
+      const res = await db.run('select * from authors where name ilike $1', [
         authorName,
       ]);
-      if (res.rows.length === 0) {
-        return null;
-      }
+
       const author = res.rows[0];
       assertAuthorDTO(author);
       return author;
     } catch (e) {
-      logger.error(`Failed to fetch author: ${(e instanceof Error ? e.stack : '')}`);
+      logger.error(
+        `Failed to fetch author: ${e instanceof Error ? e.stack : ''}`,
+      );
+      throw e
     }
   }
 
@@ -32,7 +33,10 @@ export class AuthorRepository {
       assertAuthorDTO(author);
       return author;
     } catch (e) {
-      logger.error(`Failed to fetch author: ${(e instanceof Error ? e.stack : '')}`);
+      logger.error(
+        `Failed to fetch author: ${e instanceof Error ? e.stack : ''}`,
+      );
+      throw e
     }
   }
 
@@ -43,27 +47,51 @@ export class AuthorRepository {
         'insert into authors (name) VALUES ($1) RETURNING *',
         [author.name],
       );
+
       if (res.rows.length === 0) {
-        return null;
+        throw new Error('Failed to insert author');
       }
 
-      const book = res.rows[0];
+      const dbAuthor = res.rows[0];
 
-      assertAuthorDTO(book);
-      return book;
+      assertAuthorDTO(dbAuthor);
+      return dbAuthor;
     } catch (e) {
-      logger.error(`Failed to insert author: ${(e instanceof Error ? e.stack : '')}`);
+      logger.error(
+        `Failed to insert author: ${e instanceof Error ? e.stack : ''}`,
+      );
+      throw e;
+    }
+  }
+
+  static async createAuthorIfDontExists(data: CreateAuthorDTO) {
+    try {
+      const author = new Author(data);
+      const res = await db.run(`select * from authors where name ilike $1`, [
+        author.name,
+      ]);
+
+      if (res.rows.length === 0) {
+        return AuthorRepository.createAuthor(data);
+      }
+
+      const dbAuthor = res.rows[0];
+
+      assertAuthorDTO(dbAuthor);
+      return dbAuthor;
+    } catch (e) {
+      logger.error(
+        `Failed to insert author: ${e instanceof Error ? e.stack : ''}`,
+      );
+      throw e;
     }
   }
 
   static async updateAuthor(data: UpdateAuthorDTO) {
     try {
-      const res = await db.run('update authors set ${} where id = $1', [
+      const res = await db.run('update authors set ${} where id = $1 RETURNING *', [
         data.id,
       ]);
-      if (res.rows.length === 0) {
-        return null;
-      }
 
       const author = res.rows[0];
 
@@ -71,21 +99,25 @@ export class AuthorRepository {
 
       return author;
     } catch (e) {
-      logger.error(`Failed to fetch author: ${(e instanceof Error ? e.stack : '')}`);
+      logger.error(
+        `Failed to fetch author: ${e instanceof Error ? e.stack : ''}`,
+      );
+      throw e
     }
   }
 
   static async deleteAuthor(id: number) {
     try {
-      const res = await db.run('select * from authors where id = $1', [id]);
-      if (res.rows.length === 0) {
-        return null;
-      }
+      const res = await db.run('select * from authors where id = $1 RETURNING *', [id]);
+
       const author = res.rows[0];
       assertAuthorDTO(author);
       return author;
     } catch (e) {
-      logger.error(`Failed to fetch author: ${(e instanceof Error ? e.stack : '')}`);
+      logger.error(
+        `Failed to fetch author: ${e instanceof Error ? e.stack : ''}`,
+      );
+      throw e
     }
   }
 }
