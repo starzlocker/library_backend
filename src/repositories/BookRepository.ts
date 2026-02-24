@@ -3,12 +3,14 @@ import { assertDBBookDTO } from '../DTOs/Book/DBBookDTO.js';
 import type { UpdateBookDTO } from '../DTOs/Book/UpdateBookDTO.js';
 import type { GetBookDTO } from '../DTOs/Book/GetBookDTO.js';
 import type { CreateBookDTO } from '../DTOs/Book/CreateBookDTO.js';
+import { assertNumber, assertObject } from '../utils/TypeAssertions.js';
 
 const INVALID_UPDATE_VALUES = 'There are no valid values for the update query';
 
 export class BookRepository {
-  static async getBooks(queryParams: GetBookDTO) {
+  static async getBooks(queryParams: GetBookDTO, page: number=0) {
     const { title, author, year, genre } = queryParams;
+    const limit = 15;
     const whereValues = [];
     const whereQuery = [];
 
@@ -43,10 +45,17 @@ export class BookRepository {
 
     if (whereQuery.length) query += whereQuery.join(' and ');
 
+    query += `order by id limit ${limit} OFFSET ${page * limit}`
+
     const res = await db.run(query, whereValues);
 
+    const totalItems = await BookRepository.getTotalRows()
+    
     if (res.rows.length === 0) {
-      return null;
+      return {
+        data: null,
+        totalItems
+      };
     }
 
     const books = res.rows.map((book) => {
@@ -54,15 +63,25 @@ export class BookRepository {
       return book;
     });
 
-    return books;
+    return {
+      data: books,
+      totalItems
+    };
   }
 
   static async createBook(data: CreateBookDTO) {
     const res = await db.run(
       `
 			INSERT INTO books (
-				title, author_id, genre_id, year, 
-				cover_url, description, price
+				title, 
+        author_id, 
+        genre_id, 
+        year, 
+				cover_url, 
+        isbn,
+        description, 
+        price,
+        stock
 			) VALUES (
 				$1, 
 				$2,
@@ -70,9 +89,12 @@ export class BookRepository {
 				$4, 
 				$5, 
 				$6, 
-				$7
+        $7,
+        $8,
+        $9
 			 )
-			RETURNING *
+        ON CONFLICT (title) DO NOTHING
+        RETURNING id
 		`,
       [
         data.title,
@@ -80,19 +102,22 @@ export class BookRepository {
         data.genre_id,
         data.year,
         data.cover_url,
+        data.isbn,
         data.description,
         data.price,
+        data.stock,
       ],
     );
 
     if (res.rows.length === 0) {
-      return null;
+      return -1;
     }
 
-    const returnedBook = res.rows[0];
-    assertDBBookDTO(returnedBook);
+    const createdId = res.rows[0] as {id: number};
 
-    return returnedBook;
+    assertNumber(createdId.id);
+
+    return createdId;
   }
 
   static async getBookById(id: number) {
@@ -119,32 +144,45 @@ export class BookRepository {
     }
 
     const query =
-      'UPDATE books SET ' + fields.join(', ') + ` WHERE id = $${i} RETURNING *`;
+      'UPDATE books SET ' + fields.join(', ') + ` WHERE id = $${i} RETURNING id`;
 
     values.push(data.id);
 
     const res = await db.run(query, values);
-    if (res.rows.length === 0) {
-      return null;
-    }
-    const dbBook = res.rows[0];
 
-    assertDBBookDTO(dbBook);
+    const updatedId = res.rows[0];
 
-    return dbBook;
+    assertNumber(updatedId);
+
+    return updatedId;
   }
 
   static async deleteBook(id: number) {
-    const res = await db.run('DELETE FROM books where id = $1', [id]);
-    if (res.rows.length === 0) {
-      return null;
-    }
-    const dbBook = res.rows[0];
+    const res = await db.run('DELETE FROM books where id = $1 RETURNING id', [
+      id,
+    ]);
 
-    assertDBBookDTO(dbBook);
-    return dbBook;
+    const deletedId = res.rows[0];
+
+    assertNumber(deletedId);
+    return deletedId;
   }
 
+  static async getTotalRows() {
+    const totalRes = await db.run('select count(id) as total_items from books')
+
+    let totalItems;
+    if (totalRes.rows.length > 0) {
+      const row = totalRes.rows[0]
+      assertObject(row);
+      if ('total_items' in row) totalItems = Number(row.total_items)
+    } else {
+      totalItems = 0
+    }
+
+    return totalItems;
+  }
+ 
   static isBooksOnTheTable() {
     return true;
   }
