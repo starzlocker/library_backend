@@ -1,4 +1,5 @@
 import {
+  assertDate,
   assertNumber,
   assertObject,
   assertString,
@@ -15,6 +16,6 @@ export function assertGenreDTO(data: unknown): asserts data is DBGenreDTO {
   assertObject(data);
   assertNumber(data.id);
   assertString(data.name);
-  assertString(data.created_at);
-  assertString(data.updated_at);
+  assertDate(data.created_at);
+  assertDate(data.updated_at);
 }

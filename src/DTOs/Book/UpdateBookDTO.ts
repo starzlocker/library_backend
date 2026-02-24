@@ -12,6 +12,7 @@ export type UpdateBookDTO = {
   year?: string;
   coverUrl?: string;
   description?: string;
+  isbn?: string;
   stock?: number;
   price?: number;
 };
@@ -29,4 +30,5 @@ export function assertUpdateBookDTO(
   if ('description' in data) assertNonEmptyString(data.description);
   if ('stock' in data) assertNumber(data.stock);
   if ('price' in data) assertNumber(data.price);
+  if ('isbn' in data) assertNonEmptyString(data.isbn);
 }

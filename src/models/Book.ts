@@ -20,6 +20,7 @@ export function assertBookType(data: unknown): asserts data is Book {
   assertDate(data.createdAt);
   assertDate(data.updatedAt);
   if (isNonNullable(data.coverUrl)) assertString(data.coverUrl);
+  if (isNonNullable(data.isbn)) assertString(data.isbn);
 }
 export class Book {
   id: number;
@@ -30,6 +31,7 @@ export class Book {
   genreId: number;
   year: number;
   coverUrl: string | null;
+  isbn: string | null;
   description: string;
   stock: number;
   price: number;
@@ -46,6 +48,7 @@ export class Book {
     this.genre = data.genre;
     this.year = data.year;
     this.coverUrl = data.coverUrl || null;
+    this.isbn = data.isbn || null;
     this.description = data.description;
     this.stock = data.stock;
     this.price = data.price;
