@@ -2,33 +2,40 @@ import {
   assertNonEmptyString,
   assertNumber,
   assertObject,
+  isNonNullable,
 } from '../../utils/TypeAssertions.js';
 
 export type UpdateBookDTO = {
-  id?:number;
-  title?: string;
-  author?: number;
-  genre?: number;
-  year?: string;
-  coverUrl?: string;
-  description?: string;
-  isbn?: string;
-  stock?: number;
-  price?: number;
+  id: number;
+  title: string;
+  authorId: number;
+  author: string;
+  genre: string;
+  genreId: number;
+  year: number;
+  coverUrl: string | null;
+  isbn: string;
+  description: string;
+  stock: number;
+  price: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export function assertUpdateBookDTO(
   data: unknown,
 ): asserts data is UpdateBookDTO {
   assertObject(data);
-  if ('id' in data) assertNumber(data.id)
-  if ('title' in data) assertNonEmptyString(data.title);
-  if ('author' in data) assertNumber(data.author);
-  if ('genre' in data) assertNumber(data.genre);
-  if ('year' in data) assertNonEmptyString(data.year);
-  if ('coverUrl' in data) assertNonEmptyString(data.coverUrl);
-  if ('description' in data) assertNonEmptyString(data.description);
-  if ('stock' in data) assertNumber(data.stock);
-  if ('price' in data) assertNumber(data.price);
-  if ('isbn' in data) assertNonEmptyString(data.isbn);
+  assertNumber(data.id);
+  assertNonEmptyString(data.title);
+  assertNumber(data.authorId);
+  assertNumber(data.genreId);
+  assertNumber(data.year);
+  assertNonEmptyString(data.description);
+  assertNumber(data.stock);
+  assertNumber(data.price);
+  assertNonEmptyString(data.createdAt);
+  assertNonEmptyString(data.updatedAt);
+  if (isNonNullable(data.coverUrl)) assertNonEmptyString(data.coverUrl);
+  if (isNonNullable(data.isbn)) assertNonEmptyString(data.isbn);
 }
