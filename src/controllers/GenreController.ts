@@ -4,8 +4,8 @@ import {
   assertNonEmptyString,
   assertNonNullable,
 } from '../utils/TypeAssertions.js';
-import { DBGenreDTOasGenre } from '../utils/mappers.js';
-import { assertUpdateGenreDTO  } from '../DTOs/Genre/UpdateGenreDTO.js';
+import { mapDBGenreDTOasGenre } from '../utils/mappers.js';
+import { assertUpdateGenreDTO } from '../DTOs/Genre/UpdateGenreDTO.js';
 import { assertCreateGenreDTO } from '../DTOs/Genre/CreateGenreDTO.js';
 
 const INVALID_DATA = 'Invalid object shape for type Genre';
@@ -35,7 +35,7 @@ export const getGenreByName = async (req: Request, res: Response) => {
       });
     }
 
-    const genre = DBGenreDTOasGenre(dbGenre);
+    const genre = mapDBGenreDTOasGenre(dbGenre);
 
     return res.status(200).json({
       success: true,
@@ -73,7 +73,7 @@ export const createGenre = async (req: Request, res: Response) => {
       });
     }
 
-    const genre = DBGenreDTOasGenre(dbGenre);
+    const genre = mapDBGenreDTOasGenre(dbGenre);
 
     res.status(200).json({
       success: true,
@@ -111,7 +111,7 @@ export const deleteGenre = async (req: Request, res: Response) => {
       });
     }
 
-    const genre = DBGenreDTOasGenre(dbGenre);
+    const genre = mapDBGenreDTOasGenre(dbGenre);
 
     res.status(200).json({
       success: true,
@@ -160,7 +160,7 @@ export const updateGenre = async (req: Request, res: Response) => {
       });
     }
 
-    const genre = DBGenreDTOasGenre(dbGenre);
+    const genre = mapDBGenreDTOasGenre(dbGenre);
 
     res.status(200).json({
       success: true,

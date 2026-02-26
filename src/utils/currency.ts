@@ -9,7 +9,7 @@ export default class Currency {
     const valueArray = String(value).split('');
     const floatingPart = valueArray.slice(-2);
     const integerPart = valueArray.slice(0, -2);
-    return [integerPart, '.', floatingPart].join('');
+    return [...integerPart, '.', ...floatingPart].join('');
   };
   
 }
