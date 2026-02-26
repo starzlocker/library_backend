@@ -1,7 +1,10 @@
 import type { Request, Response } from 'express';
-import { assertNonEmptyString, assertNonNullable } from '../utils/TypeAssertions.js';
+import {
+  assertNonEmptyString,
+  assertNonNullable,
+} from '../utils/TypeAssertions.js';
 import { AuthorRepository } from '../repositories/AuthorRepository.js';
-import { DBAuthorDTOasAuthor } from '../utils/mappers.js';
+import { mapDBAuthorDTOasAuthor } from '../utils/mappers.js';
 import { assertCreateAuthorDTO } from '../DTOs/Author/CreateAuthorDTO.js';
 import { assertUpdateAuthorDTO } from '../DTOs/Author/UpdateAuthorDTO.js';
 
@@ -19,7 +22,7 @@ export const getAuthorByName = async (req: Request, res: Response) => {
   } catch {
     return res.status(400).json({
       success: false,
-      message: INVALID_PARAMS
+      message: INVALID_PARAMS,
     });
   }
 
@@ -32,7 +35,7 @@ export const getAuthorByName = async (req: Request, res: Response) => {
       });
     }
 
-    const author = DBAuthorDTOasAuthor(dbAuthor);
+    const author = mapDBAuthorDTOasAuthor(dbAuthor);
 
     return res.status(200).json({
       success: true,
@@ -70,7 +73,7 @@ export const createAuthor = async (req: Request, res: Response) => {
       });
     }
 
-    const author = DBAuthorDTOasAuthor(dbAuthor);
+    const author = mapDBAuthorDTOasAuthor(dbAuthor);
 
     res.status(200).json({
       success: true,
@@ -108,7 +111,7 @@ export const deleteAuthor = async (req: Request, res: Response) => {
       });
     }
 
-    const author = DBAuthorDTOasAuthor(dbAuthor);
+    const author = mapDBAuthorDTOasAuthor(dbAuthor);
 
     res.status(200).json({
       success: true,
@@ -157,7 +160,7 @@ export const updateAuthor = async (req: Request, res: Response) => {
       });
     }
 
-    const author = DBAuthorDTOasAuthor(dbAuthor);
+    const author = mapDBAuthorDTOasAuthor(dbAuthor);
 
     res.status(200).json({
       success: true,
