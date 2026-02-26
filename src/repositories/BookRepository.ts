@@ -46,7 +46,7 @@ export class BookRepository {
 
     if (whereQuery.length) query += whereQuery.join(' and ');
 
-    // query += `order by id limit ${limit} OFFSET ${page * limit}`
+    query += `order by id limit ${limit} OFFSET ${page * limit}`
 
     const res = await db.run(query, whereValues);
 
