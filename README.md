@@ -21,7 +21,7 @@ Este repositório contém o backend de uma aplicação de livraria construída c
 
 1. Clone o repositório
 
-   git clone git@github.com:starzlocker/library_management_system_backend
+   ```git clone git@github.com:starzlocker/library_management_system_backend```
 
 2. Instale dependências
 
