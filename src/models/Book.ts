@@ -7,7 +7,7 @@ import {
   isNonNullable,
 } from '../utils/TypeAssertions.js';
 
-export function assertBookType(data: unknown): asserts data is Book {
+export function assertBookSchema(data: unknown): asserts data is BookSchema {
   assertObject(data);
   assertNumber(data.id);
   assertNonEmptyString(data.title);
@@ -22,7 +22,8 @@ export function assertBookType(data: unknown): asserts data is Book {
   if (isNonNullable(data.coverUrl)) assertString(data.coverUrl);
   if (isNonNullable(data.isbn)) assertString(data.isbn);
 }
-export class Book {
+
+export type BookSchema = { 
   id: number;
   title: string;
   authorId: number;
@@ -31,29 +32,48 @@ export class Book {
   genreId: number;
   year: number;
   coverUrl: string | null;
-  isbn: string | null;
   description: string;
   stock: number;
   price: number;
+  isbn: string;
   createdAt: Date;
   updatedAt: Date;
+}
 
-  constructor(data: unknown) {
-    assertBookType(data);
-    this.id = data.id;
-    this.title = data.title;
-    this.authorId = data.authorId;
-    this.author = data.author;
-    this.genreId = data.genreId;
-    this.genre = data.genre;
-    this.year = data.year;
-    this.coverUrl = data.coverUrl || null;
-    this.isbn = data.isbn || null;
-    this.description = data.description;
-    this.stock = data.stock;
-    this.price = data.price;
-    this.createdAt = data.createdAt;
-    this.updatedAt = data.updatedAt;
+export class Book {
+  id: number | null = null;
+  title: string | null = null;
+  authorId: number | null = null;
+  author: string | null = null;
+  genre: string | null = null;
+  genreId: number | null = null;
+  year: number | null = null;
+  coverUrl: string | null = null;
+  isbn: string | null = null;
+  description: string | null = null;
+  stock: number | null = null;
+  price: number | null = null;
+  createdAt: Date | null = null;
+  updatedAt: Date | null = null;
+
+  constructor(data:unknown=null) {
+    if(data !== null) {
+      assertBookSchema(data);
+      this.id = data.id;
+      this.title = data.title;
+      this.authorId = data.authorId;
+      this.author = data.author;
+      this.genreId = data.genreId;
+      this.genre = data.genre;
+      this.year = data.year;
+      this.coverUrl = data.coverUrl || null;
+      this.isbn = data.isbn || null;
+      this.description = data.description;
+      this.stock = data.stock;
+      this.price = data.price;
+      this.createdAt = data.createdAt;
+      this.updatedAt = data.updatedAt;
+    }
   }
 
   validate() {
@@ -64,11 +84,11 @@ export class Book {
       throw new Error('Required genre id');
     }
 
-    if (!this.title.trim()) {
+    if (!this.title || !this.title.trim()) {
       throw new Error('Required book title');
     }
 
-    if (this.year < 0) {
+    if (this.year && this.year < 0) {
       throw new Error('Invalid published year');
     }
   }
