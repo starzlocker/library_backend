@@ -4,7 +4,7 @@ import express from 'express';
 import bookRoutes from './routes/bookRoutes.js'
 
 const PORT = env.PORT;
-const URL = env.CLIENT_URL;
+const FRONTEND = env.CLIENT_URL;
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-	origin: URL
+	origin: FRONTEND
 }));
 
 app.use('/api', router)
