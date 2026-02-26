@@ -155,3 +155,5 @@ docker-compose.yml
 # Cache files
 .cache/
 *.cache
+
+requests/
