@@ -5,11 +5,11 @@ import { validationResult } from 'express-validator';
 import { logger } from '../config/logger.js';
 import { AuthorRepository } from '../repositories/AuthorRepository.js';
 import { GenreRepository } from '../repositories/GenreRepository.js';
-import { assertUpdateBookDTO } from '../DTOs/Book/UpdateBookDTO.js';
 import { assertGetBookDTO } from '../DTOs/Book/GetBookDTO.js';
 import { assertCreateBookDTO } from '../DTOs/Book/CreateBookDTO.js';
-import { DBBookDTOasBook } from '../utils/mappers.js';
+import { mapBookUpdateDTOtoDB, mapDBBookDTOasBook } from '../utils/mappers.js';
 import { isNonNullable } from '../utils/TypeAssertions.js';
+import { assertUpdateBookDTO, UpdateBookDTO } from '../DTOs/Book/UpdateBookDTO.js';
 
 const NOT_FOUND = 'Book not found';
 const SERVER_ERROR = 'Internal server error';
@@ -22,7 +22,7 @@ const CONFLICT = 'Book is already registered';
 
 export const getBooks = async (req: Request, res: Response) => {
   try {
-    const {page, ...params} = req.query;
+    const { page, ...params } = req.query;
 
     let pageNumber;
 
@@ -36,7 +36,10 @@ export const getBooks = async (req: Request, res: Response) => {
       });
     }
 
-    const {data, totalItems} = await BookRepository.getBooks(params, pageNumber);
+    const { data, totalItems } = await BookRepository.getBooks(
+      params,
+      pageNumber,
+    );
 
     if (!data) {
       return res.status(404).json({
@@ -44,13 +47,13 @@ export const getBooks = async (req: Request, res: Response) => {
       });
     }
 
-    const books = data.map((b) => DBBookDTOasBook(b));
+    const books = data.map((b) => mapDBBookDTOasBook(b));
 
     res.status(200).json({
       success: true,
       data: books,
       page: pageNumber ?? 0,
-      totalItems
+      totalItems,
     });
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
@@ -82,7 +85,7 @@ export const getBookById = async (req: Request, res: Response) => {
       });
     }
 
-    const book = DBBookDTOasBook(dbBook);
+    const book = mapDBBookDTOasBook(dbBook);
 
     res.status(200).json({
       success: true,
@@ -113,7 +116,7 @@ export const updateBook = async (req: Request, res: Response) => {
     });
   }
 
-  const data = { ...req.body, id: id };
+  const data = req.body as UpdateBookDTO;
 
   try {
     assertUpdateBookDTO(data);
@@ -124,10 +127,12 @@ export const updateBook = async (req: Request, res: Response) => {
     });
   }
 
+  const dbBook = mapBookUpdateDTOtoDB(data);
+
   let updatedId;
 
   try {
-    updatedId = await BookRepository.updateBook(data);
+    updatedId = await BookRepository.updateBook(id, dbBook);
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
     return res.status(500).json({
@@ -213,7 +218,7 @@ export const createBook = async (req: Request, res: Response) => {
     //   data.title,
     // );
 
-    data.description = data.description ?? "Sem descrição";
+    data.description = data.description ?? 'Sem descrição';
     data.price = data.price ?? 0;
     data.cover_url = data.cover_url ?? null;
 

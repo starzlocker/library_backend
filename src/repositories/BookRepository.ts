@@ -1,9 +1,9 @@
 import { db } from '../config/database.js';
 import { assertDBBookDTO } from '../DTOs/Book/DBBookDTO.js';
-import type { UpdateBookDTO } from '../DTOs/Book/UpdateBookDTO.js';
 import type { GetBookDTO } from '../DTOs/Book/GetBookDTO.js';
 import type { CreateBookDTO } from '../DTOs/Book/CreateBookDTO.js';
 import { assertNumber, assertObject } from '../utils/TypeAssertions.js';
+import { DBUpdateBookDTO } from '../DTOs/Book/DBUpdateBookDTO.js';
 
 const INVALID_UPDATE_VALUES = 'There are no valid values for the update query';
 
@@ -11,6 +11,7 @@ export class BookRepository {
   static async getBooks(queryParams: GetBookDTO, page: number=0) {
     const { title, author, year, genre } = queryParams;
     const limit = 15;
+    console.log(limit, page);
     const whereValues = [];
     const whereQuery = [];
 
@@ -45,7 +46,7 @@ export class BookRepository {
 
     if (whereQuery.length) query += whereQuery.join(' and ');
 
-    query += `order by id limit ${limit} OFFSET ${page * limit}`
+    // query += `order by id limit ${limit} OFFSET ${page * limit}`
 
     const res = await db.run(query, whereValues);
 
@@ -113,9 +114,9 @@ export class BookRepository {
       return -1;
     }
 
-    const createdId = res.rows[0] as {id: number};
+    const createdId = res.rows[0].id;
 
-    assertNumber(createdId.id);
+    assertNumber(createdId);
 
     return createdId;
   }
@@ -127,14 +128,15 @@ export class BookRepository {
     return returnedBook;
   }
 
-  static async updateBook(data: UpdateBookDTO) {
+
+  static async updateBook(id: number, data: DBUpdateBookDTO) {
     const fields = [];
     const values = [];
 
     let i = 1;
 
     for (let key in data) {
-      const typedKey = key as keyof UpdateBookDTO;
+      const typedKey = key as keyof DBUpdateBookDTO;
       fields.push(`${key}=$${i++}`);
       values.push(data[typedKey]);
     }
@@ -146,11 +148,11 @@ export class BookRepository {
     const query =
       'UPDATE books SET ' + fields.join(', ') + ` WHERE id = $${i} RETURNING id`;
 
-    values.push(data.id);
+    values.push(id);
 
     const res = await db.run(query, values);
 
-    const updatedId = res.rows[0];
+    const updatedId = res.rows[0].id;
 
     assertNumber(updatedId);
 
@@ -162,7 +164,7 @@ export class BookRepository {
       id,
     ]);
 
-    const deletedId = res.rows[0];
+    const deletedId = res.rows[0].id;
 
     assertNumber(deletedId);
     return deletedId;
