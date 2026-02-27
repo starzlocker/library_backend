@@ -2,6 +2,7 @@ import cors from 'cors';
 import { env } from 'node:process';
 import express from 'express';
 import bookRoutes from './routes/bookRoutes.js'
+import { logger } from './config/logger.js';
 
 const PORT = env.PORT;
 const FRONTEND = env.CLIENT_URL;
@@ -20,5 +21,5 @@ app.use(cors({
 app.use('/api', router)
 
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`)
+    logger.info(`Server listening on port ${PORT}`)
 })
