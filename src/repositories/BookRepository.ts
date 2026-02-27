@@ -11,7 +11,6 @@ export class BookRepository {
   static async getBooks(queryParams: GetBookDTO, page: number=0) {
     const { title, author, year, genre } = queryParams;
     const limit = 15;
-    console.log(limit, page);
     const whereValues = [];
     const whereQuery = [];
 
