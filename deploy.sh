@@ -8,6 +8,8 @@ git fetch origin
 
 git reset --hard origin/production
 
+git checkout origin/production
+
 npm ci
 npm run build
 
