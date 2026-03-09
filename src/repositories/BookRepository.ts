@@ -8,16 +8,14 @@ import { DBUpdateBookDTO } from '../DTOs/Book/DBUpdateBookDTO.js';
 const INVALID_UPDATE_VALUES = 'There are no valid values for the update query';
 
 export class BookRepository {
-  static async getBooks(queryParams: GetBookDTO, page: number=0) {
+  static async getBooks(queryParams: GetBookDTO, page: number=1) {
     const { title, author, year, genre } = queryParams;
     const limit = 15;
     console.log(limit, page);
     const whereValues = [];
     const whereQuery = [];
 
-    if (author || year || genre) {
-      whereQuery.push('WHERE');
-
+    if (title || author || year || genre) {
       if (year) {
         whereQuery.push(`year = $${whereValues.length + 1}`);
         whereValues.push(title);
@@ -42,22 +40,30 @@ export class BookRepository {
         whereValues.push(title);
       }
     }
-    let query = `select b.*, a.name as author, g.name as genre from books b INNER JOIN authors a on b.author_id = a.id INNER JOIN genres g on b.genre_id = g.id `;
+    let query = `
+      select
+        b.*, a.name as author,
+        g.name as genre,
+        COUNT(*) OVER() as total_rows
+      from books b
+      INNER JOIN authors a on b.author_id = a.id
+      INNER JOIN genres g on b.genre_id = g.id
+    `;
+      
+    if (whereQuery.length) query += "WHERE " + whereQuery.join(' and ');
 
-    if (whereQuery.length) query += whereQuery.join(' and ');
-
-    query += `order by id limit ${limit} OFFSET ${page * limit}`
+    query += `order by id limit ${limit} OFFSET ${(page-1) * limit}`
 
     const res = await db.run(query, whereValues);
-
-    const totalItems = await BookRepository.getTotalRows()
     
     if (res.rows.length === 0) {
       return {
-        data: null,
-        totalItems
+        data: [],
+        totalItems: 0,
       };
     }
+
+    const totalItems = Number(res.rows[0].total_rows);
 
     const books = res.rows.map((book) => {
       assertDBBookDTO(book);
