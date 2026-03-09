@@ -41,8 +41,12 @@ export const getBooks = async (req: Request, res: Response) => {
       pageNumber,
     );
 
-    if (!data) {
+    if (!data.length) {
       return res.status(404).json({
+        success: false,
+        data: [],
+        page: pageNumber ?? 1,
+        totalItems,
         message: NOT_FOUND,
       });
     }
@@ -52,16 +56,13 @@ export const getBooks = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       data: books,
-      page: pageNumber ?? 0,
+      page: pageNumber ?? 1,
       totalItems,
     });
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
     logger.error(`${GET_ERROR}: ${e instanceof Error ? e.stack : ''}`);
-    res.status(500).json({
-      success: false,
-      error: err,
-    });
+    res.status(500).json(err);
   }
 };
 
