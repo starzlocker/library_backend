@@ -27,7 +27,7 @@ export class UserRepository {
     } catch (error) {
       const stack = error instanceof Error ? error.stack : 'Unknown error';
       logger.error(`Erro ao criar novo usuário: ${stack}`);
-      return null;
+      throw error;
     }
   }
 

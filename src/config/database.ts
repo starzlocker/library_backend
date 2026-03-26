@@ -9,12 +9,12 @@ export const pool = new Pool({
   port: Number(env.DB_PORT),
   max: Number(env.MAX_DB_POOLSIZE),
   connectionTimeoutMillis: 2_000,
-  idleTimeoutMillis: 30_000
-})
+  idleTimeoutMillis: 30_000,
+});
 
 export const db = {
-  run: async(query:string, params?: any[]) => {
+  run: async (query: string, params?: any[]) => {
     const res = await pool.query(query, params);
     return res;
-  }
-}
+  },
+};
