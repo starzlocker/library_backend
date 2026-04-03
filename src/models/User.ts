@@ -6,7 +6,7 @@ import {
   assertString,
 } from '../utils/TypeAssertions.js';
 
-const VALID_ROWS = ['user', 'admin'];
+// const VALID_ROWS = ['user', 'admin'];
 
 export type UserSchema = {
   id: number;
@@ -52,5 +52,3 @@ export class User {
     this.updatedAt = data.updatedAt;
   }
 }
-
-module.exports = { UserModel: User };
