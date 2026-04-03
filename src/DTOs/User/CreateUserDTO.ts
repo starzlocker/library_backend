@@ -1,6 +1,5 @@
 import {
   assertNonEmptyString,
-  assertNumber,
   assertObject,
   assertString,
 } from '../../utils/TypeAssertions.js';
@@ -9,12 +8,12 @@ export function assertCreateUserDTO(
   data: unknown,
 ): asserts data is CreateUserDTO {
   assertObject(data);
-  assertNonEmptyString(data.firstName);
-  assertNonEmptyString(data.cpf);
-  assertNonEmptyString(data.lastName);
-  assertNonEmptyString(data.email);
-  assertNonEmptyString(data.password);
-  assertString(data.role);
+  assertNonEmptyString(data.firstName, 'firstName');
+  assertNonEmptyString(data.cpf, 'cpf');
+  assertNonEmptyString(data.lastName, 'lastName');
+  assertNonEmptyString(data.email, 'email');
+  assertNonEmptyString(data.password, 'password');
+  if ('role' in data) assertString(data.role, 'role');
 }
 
 export type CreateUserDTO = {
