@@ -4,9 +4,9 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug TS (ts-node/esm)",
-      "runtimeArgs": ["--loader", "ts-node/esm", "--env-file=.env"],
-      "program": "${workspaceFolder}/src/server.ts",
+      "name": "Debug Server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["--import=tsx", "--env-file=.env", "src/server.ts"],
       "skipFiles": ["<node_internals>/**"]
     },
 
