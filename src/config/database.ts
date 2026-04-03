@@ -13,7 +13,7 @@ export const pool = new Pool({
 });
 
 export const db = {
-  run: async (query: string, params?: any[]) => {
+  run: async (query: string, params?: unknown[]) => {
     const res = await pool.query(query, params);
     return res;
   },
