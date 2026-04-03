@@ -10,9 +10,10 @@ export function assertCreateUserDTO(
 ): asserts data is CreateUserDTO {
   assertObject(data);
   assertNonEmptyString(data.firstName);
-  assertNumber(data.lastName);
-  assertNumber(data.email);
-  assertNumber(data.password);
+  assertNonEmptyString(data.cpf);
+  assertNonEmptyString(data.lastName);
+  assertNonEmptyString(data.email);
+  assertNonEmptyString(data.password);
   assertString(data.role);
 }
 
@@ -21,5 +22,6 @@ export type CreateUserDTO = {
   lastName: string;
   email: string;
   password: string;
+  cpf: string;
   role: string;
 };

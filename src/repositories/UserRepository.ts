@@ -1,6 +1,6 @@
 import { db } from '../config/database.js';
 import { logger } from '../config/logger.js';
-import { CreateUserDTO } from '../DTOs/User/createUserDTO.js';
+import { CreateUserDTO } from '../DTOs/User/CreateUserDTO.js';
 import { UpdateUserDTO } from '../DTOs/User/UpdateUserDTO.js';
 import { assertUserSchema, User, UserSchema } from '../models/User.js';
 import { assertNumber, assertObject } from '../utils/TypeAssertions.js';
@@ -9,10 +9,11 @@ export class UserRepository {
   static async createUser(payload: CreateUserDTO) {
     try {
       const res = await db.run(
-        'insert into users (first_name, last_name, email, password, role) values ($1, $2, $3, $4, $5) returning id',
+        'insert into users (first_name, last_name, cpf, email, password, role) values ($1, $2, $3, $4, $5) returning id',
         [
           payload.firstName,
           payload.lastName,
+          payload.cpf,
           payload.email,
           payload.password,
           payload.role,
@@ -75,14 +76,16 @@ export class UserRepository {
           id = $1
           firstName = $2
           lastName = $3
-          email = $4
-          password = $5
-          role = $6
+          cpf = $4
+          email = $5
+          password = $6
+          role = $7
         where id = $1 returning id`,
         [
           payload.id,
           payload.firstName,
           payload.lastName,
+          payload.cpf,
           payload.email,
           payload.password,
           payload.role,

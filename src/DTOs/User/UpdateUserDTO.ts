@@ -11,9 +11,10 @@ export function assertUpdateUserDTO(
   assertObject(data);
   assertNumber(data.id);
   assertNonEmptyString(data.firstName);
-  assertNumber(data.lastName);
-  assertNumber(data.email);
-  assertNumber(data.password);
+  assertNonEmptyString(data.lastName);
+  assertNonEmptyString(data.cpf);
+  assertNonEmptyString(data.email);
+  assertNonEmptyString(data.password);
   assertString(data.role);
 }
 
@@ -21,6 +22,7 @@ export type UpdateUserDTO = {
   id: number;
   firstName: string;
   lastName: string;
+  cpf: number;
   email: string;
   password: string;
   role: string;
