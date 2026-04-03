@@ -140,7 +140,7 @@ export class BookRepository {
 
     let i = 1;
 
-    for (let key in data) {
+    for (const key in data) {
       const typedKey = key as keyof DBUpdateBookDTO;
       fields.push(`${key}=$${i++}`);
       values.push(data[typedKey]);
