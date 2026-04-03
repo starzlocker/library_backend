@@ -4,7 +4,8 @@ import type { Request, Response, NextFunction } from 'express';
 import { assertNonEmptyString, assertObject } from '../utils/TypeAssertions.js';
 import { ResponseService } from '../utils/ResponseFactory.js';
 import { assertCreateUserDTO } from '../DTOs/User/CreateUserDTO.js';
-
+import jwt from 'jsonwebtoken';
+import { logger } from '../config/logger.js';
 type LoginBody = {
   email: string;
   password: string;
@@ -20,7 +21,6 @@ function AssertsLoginBody(data: unknown): asserts data is LoginBody {
   assertNonEmptyString(data.password);
 }
 
-const jwt = require('jsonwebtoken');
 const BLACKLIST: Record<string, boolean> = {};
 //teste
 export class AuthController {
@@ -44,9 +44,13 @@ export class AuthController {
       return ResponseService.sendUnauthorizedError(res, 'Invalid password.');
     }
 
-    const signedToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn,
-    });
+    const signedToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_SECRET ?? '',
+      {
+        expiresIn,
+      },
+    );
 
     return ResponseService.sendRequestSuccess(res, {
       id: user.id,
@@ -57,7 +61,7 @@ export class AuthController {
   static async signup(req: Request, res: Response) {
     try {
       const payload = req.body;
-
+      logger.info('Chegamos aqui');
       try {
         assertCreateUserDTO(payload);
       } catch (error) {
@@ -74,9 +78,13 @@ export class AuthController {
         password: encriptedPwd,
       });
 
-      const signedToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-        expiresIn,
-      });
+      const signedToken = jwt.sign(
+        { id: userId },
+        process.env.JWT_SECRET ?? '',
+        {
+          expiresIn,
+        },
+      );
 
       return ResponseService.sendRequestSuccess(res, {
         id: userId,
@@ -123,7 +131,7 @@ export class AuthController {
       return ResponseService.sendForbidenError(res, 'Token inválido.');
     }
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET ?? '');
 
       if (!decoded) {
         return ResponseService.sendForbidenError(res, 'Token inválido.');
@@ -138,5 +146,3 @@ export class AuthController {
     }
   }
 }
-
-module.exports = { AuthController };
