@@ -2,7 +2,7 @@ import type { Response } from 'express';
 
 export class ResponseService {
   static sendRequestSuccess(res: Response, message?: unknown) {
-    return res.send(200).json({
+    return res.status(200).json({
       success: true,
       message: message ?? 'Request was succesfull.',
     });
@@ -13,7 +13,7 @@ export class ResponseService {
     token: string,
     message?: unknown,
   ) {
-    return res.send(200).json({
+    return res.status(200).json({
       success: true,
       message: message ?? 'User authorized.',
       token,
@@ -21,21 +21,21 @@ export class ResponseService {
   }
 
   static sendRequestBodySuccess(res: Response, body: unknown) {
-    return res.send(200).json({
+    return res.status(200).json({
       success: true,
       body: body ?? {},
     });
   }
 
   static sendCreateSuccess(res: Response, message?: unknown) {
-    return res.send(203).json({
+    return res.status(203).json({
       success: true,
       message: message ?? 'Resource created succesfully.',
     });
   }
 
   static sendBadRequestError(res: Response, message?: unknown) {
-    return res.send(400).json({
+    return res.status(400).json({
       success: false,
       message: message ?? 'Bad request, review parameters and try again.',
     });
@@ -49,7 +49,7 @@ export class ResponseService {
   }
 
   static sendNotFoundError(res: Response, message?: unknown) {
-    return res.send(404).json({
+    return res.status(404).json({
       success: false,
       message: message ?? 'Resource was not found.',
     });
