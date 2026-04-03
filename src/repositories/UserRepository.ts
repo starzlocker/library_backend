@@ -9,7 +9,7 @@ export class UserRepository {
   static async createUser(payload: CreateUserDTO) {
     try {
       const res = await db.run(
-        'insert into users (first_name, last_name, cpf, email, password, role) values ($1, $2, $3, $4, $5) returning id',
+        'insert into users (first_name, last_name, cpf, email, password, role) values ($1, $2, $3, $4, $5, $6) returning id',
         [
           payload.firstName,
           payload.lastName,
