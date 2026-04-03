@@ -1,10 +1,9 @@
-import { validationResult } from 'express-validator';
 import { UserRepository } from '../repositories/UserRepository.js';
 import * as bcrypt from 'bcrypt';
 import type { Request, Response, NextFunction } from 'express';
 import { assertNonEmptyString, assertObject } from '../utils/TypeAssertions.js';
 import { ResponseService } from '../utils/ResponseFactory.js';
-import { assertCreateUserDTO } from '../DTOs/User/createUserDTO.js';
+import { assertCreateUserDTO } from '../DTOs/User/CreateUserDTO.js';
 
 type LoginBody = {
   email: string;
@@ -32,12 +31,6 @@ export class AuthController {
     } catch (error) {
       const err = error instanceof Error ? error.message : String(error);
       return ResponseService.sendBadRequestError(res, err);
-    }
-
-    const { errors } = validationResult(req);
-
-    if (errors.length) {
-      return ResponseService.sendBadRequestError(res, errors);
     }
 
     const user = await UserRepository.getUserByEmail(payload.email);
@@ -70,12 +63,6 @@ export class AuthController {
       } catch (error) {
         const err = error instanceof Error ? error.message : String(error);
         return ResponseService.sendBadRequestError(res, err);
-      }
-
-      const { errors } = validationResult(req);
-
-      if (errors.length) {
-        return ResponseService.sendBadRequestError(res, errors);
       }
 
       const saltRounds = 10;

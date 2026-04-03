@@ -1,7 +1,6 @@
 import { BookRepository } from '../repositories/BookRepository.js';
 // import { GoogleBooks } from '../services/googleBookService.js';
 import type { Request, Response } from 'express';
-import { validationResult } from 'express-validator';
 import { logger } from '../config/logger.js';
 import { AuthorRepository } from '../repositories/AuthorRepository.js';
 import { GenreRepository } from '../repositories/GenreRepository.js';
@@ -9,7 +8,10 @@ import { assertGetBookDTO } from '../DTOs/Book/GetBookDTO.js';
 import { assertCreateBookDTO } from '../DTOs/Book/CreateBookDTO.js';
 import { mapBookUpdateDTOtoDB, mapDBBookDTOasBook } from '../utils/mappers.js';
 import { isNonNullable } from '../utils/TypeAssertions.js';
-import { assertUpdateBookDTO, UpdateBookDTO } from '../DTOs/Book/UpdateBookDTO.js';
+import {
+  assertUpdateBookDTO,
+  UpdateBookDTO,
+} from '../DTOs/Book/UpdateBookDTO.js';
 
 const NOT_FOUND = 'Book not found';
 const SERVER_ERROR = 'Internal server error';
@@ -102,11 +104,6 @@ export const getBookById = async (req: Request, res: Response) => {
 };
 
 export const updateBook = async (req: Request, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
   let id;
 
   try {
@@ -155,11 +152,6 @@ export const updateBook = async (req: Request, res: Response) => {
 
 export const deleteBook = async (req: Request, res: Response) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
     let id;
 
     try {
@@ -194,11 +186,6 @@ export const deleteBook = async (req: Request, res: Response) => {
 
 export const createBook = async (req: Request, res: Response) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
     const data = req.body;
 
     assertCreateBookDTO(data);
